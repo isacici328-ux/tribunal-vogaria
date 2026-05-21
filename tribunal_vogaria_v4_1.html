@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tribunal de Vogaria — Outil du Juge</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0c0d;
+  --bg2: #111113;
+  --bg3: #17171a;
+  --bg4: #1c1c20;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --gold: #b5890f;
+  --gold2: #d4a82a;
+  --gold3: #f0c84a;
+  --red: #c0392b;
+  --green: #1a6e42;
+  --text: #e4e0d8;
+  --text2: #8a877f;
+  --text3: #4a4845;
+  --serif: 'EB Garamond', Georgia, serif;
+  --mono: 'DM Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);font-size:16px;line-height:1.6;min-height:100vh}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+aside{background:var(--bg2);border-right:1px solid var(--border2);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:1.75rem 1.25rem 1.25rem;border-bottom:1px solid var(--border2);text-align:center}
+.logo .scales{font-size:2.2rem;display:block;margin-bottom:.5rem}
+.logo h1{font-size:1.5rem;font-weight:500;letter-spacing:-.01em;color:var(--text)}
+.logo h1 em{color:var(--gold2);font-style:normal}
+.logo p{font-size:.65rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;font-family:var(--mono);margin-top:.3rem}
+.side-sec{padding:.85rem 1.1rem;border-bottom:1px solid var(--border)}
+.side-sec h3{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-family:var(--mono);font-weight:400;margin-bottom:.65rem}
+.conv-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.conv-table tr{border-bottom:1px solid var(--border)}
+.conv-table tr:last-child{border-bottom:none}
+.conv-table td{padding:.32rem .2rem}
+.conv-table td:first-child{color:var(--text2);font-style:italic}
+.conv-table td:last-child{color:var(--gold2);font-family:var(--mono);font-size:.72rem;text-align:right}
+.side-nav a{display:flex;align-items:center;gap:8px;padding:.38rem .5rem;font-size:.82rem;color:var(--text2);text-decoration:none;border-radius:4px;cursor:pointer;transition:all .12s;border:none;background:none;width:100%;text-align:left}
+.side-nav a:hover{background:var(--bg4);color:var(--text)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* MAIN */
+main{padding:1.5rem 2rem;max-width:900px}
+.tabs{display:flex;border-bottom:1px solid var(--border2);margin-bottom:1.5rem}
+.tab-btn{padding:.5rem 1.1rem;font-size:.75rem;font-family:var(--mono);letter-spacing:.06em;color:var(--text2);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .12s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--gold2);border-bottom-color:var(--gold2)}
+.pane{display:none}.pane.active{display:block}
+
+/* FORM */
+.fsec{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+.fsec-title{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-family:var(--mono);font-weight:400;margin-bottom:.85rem;padding-bottom:.45rem;border-bottom:1px solid var(--border)}
+.flabel{font-size:.82rem;color:var(--text2);font-style:italic;margin-bottom:.35rem;display:block}
+input[type=text],textarea,select{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;color:var(--text);font-family:var(--serif);font-size:.95rem;padding:.55rem .8rem;outline:none;transition:border-color .12s;margin-bottom:.85rem}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--gold)}
+textarea{min-height:75px;resize:vertical}
+
+/* CHECKBOXES */
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.ck{display:flex;align-items:center;gap:8px;font-size:.82rem;padding:.38rem .6rem;border-radius:4px;border:1px solid var(--border);cursor:pointer;color:var(--text2);transition:all .12s;user-select:none}
+.ck:hover{border-color:var(--border2);color:var(--text)}
+.ck.on{border-color:rgba(181,137,15,.45);background:rgba(181,137,15,.07);color:var(--text)}
+.ckbox{width:13px;height:13px;border:1px solid var(--border2);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .12s}
+.ck.on .ckbox{background:var(--gold);border-color:var(--gold);color:#000}
+
+/* INFRACTIONS */
+.inf-search-wrap{margin-bottom:.75rem}
+.chips-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.75rem;min-height:0}
+.chip{display:inline-flex;align-items:center;gap:5px;background:rgba(181,137,15,.14);border:1px solid rgba(181,137,15,.3);color:var(--gold2);font-size:.72rem;padding:3px 8px;border-radius:3px;font-family:var(--mono)}
+.chip button{background:none;border:none;color:var(--gold);cursor:pointer;font-size:1rem;line-height:1;padding:0}
+.cat-group{margin-bottom:4px;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.cat-head{padding:.5rem .75rem;background:var(--bg3);cursor:pointer;font-size:.78rem;font-family:var(--mono);display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .1s}
+.cat-head:hover{background:var(--bg4)}
+.cat-body{display:none}
+.cat-body.open{display:block}
+.inf-opt{padding:.4rem .75rem;font-size:.82rem;cursor:pointer;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:background .1s;color:var(--text2)}
+.inf-opt:hover{background:rgba(181,137,15,.05);color:var(--text)}
+.inf-opt.sel{background:rgba(181,137,15,.1);color:var(--gold2);border-left:2px solid var(--gold)}
+.inf-opt span{font-family:var(--mono);font-size:.68rem;color:var(--text3)}
+.inf-opt.sel span{color:var(--gold)}
+.inf-opt.hidden{display:none}
+.amende-badge{font-family:var(--mono);font-size:.65rem;padding:2px 6px;border-radius:2px;background:rgba(255,255,255,.05);color:var(--text3);margin-left:6px;white-space:nowrap}
+.amende-badge.juge{color:var(--gold);background:rgba(181,137,15,.1)}
+
+/* BTN */
+.btn-verdict{width:100%;padding:.9rem;background:var(--gold);color:#0c0c0d;border:none;border-radius:4px;font-family:var(--mono);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .15s;font-weight:500;margin-top:.5rem}
+.btn-verdict:hover{background:var(--gold2);transform:translateY(-1px)}
+.btn-verdict:active{transform:none}
+
+/* VERDICT */
+.verdict-wrap{margin-top:1.5rem}
+.vhdr{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:1.5rem;text-align:center;position:relative;overflow:hidden;margin-bottom:1rem}
+.vhdr::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.vhdr.guilty::before{background:var(--red)}
+.vhdr.free::before{background:var(--green)}
+.vlabel{font-family:var(--mono);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text3);margin-bottom:.4rem}
+.vtitle{font-size:2rem;font-weight:500;margin-bottom:.25rem}
+.vtitle.guilty{color:#e74c3c}
+.vtitle.free{color:#2ecc71}
+.vinf{font-size:.88rem;color:var(--text2);font-style:italic}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem}
+.vcard{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.9rem 1rem}
+.vcard h5{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);margin-bottom:.6rem}
+.pv{font-size:1.25rem;font-weight:500;color:var(--gold2);margin-bottom:.2rem;line-height:1.3}
+.pi{font-family:var(--mono);font-size:.75rem;color:var(--text2)}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:.7rem;padding:3px 8px;border-radius:2px;font-family:var(--mono)}
+.tag-r{background:rgba(192,57,43,.15);color:#e74c3c;border:1px solid rgba(192,57,43,.25)}
+.tag-g{background:rgba(46,204,113,.1);color:#27ae60;border:1px solid rgba(46,204,113,.2)}
+.tag-a{background:rgba(181,137,15,.12);color:var(--gold2);border:1px solid rgba(181,137,15,.22)}
+.tag-b{background:rgba(52,152,219,.1);color:#2980b9;border:1px solid rgba(52,152,219,.18)}
+.proc-box{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:.9rem 1rem;margin-bottom:.85rem}
+.proc-box h5{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem}
+.proc-box p{font-size:.9rem}
+.phrase-box{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.1rem 1.25rem;margin-bottom:.85rem;font-style:italic;font-size:.95rem;line-height:1.9;position:relative;color:var(--text)}
+.phrase-box::before{content:'"';position:absolute;top:-.4rem;left:.9rem;font-size:3rem;color:var(--gold);opacity:.2;line-height:1}
+.btn-row{display:flex;gap:.5rem}
+.btn-sm{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:.45rem .9rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer;transition:all .12s}
+.btn-sm:hover{color:var(--text);border-color:var(--gold)}
+
+/* CODES TAB */
+.art-sec{border:1px solid var(--border);border-radius:6px;margin-bottom:.6rem;overflow:hidden}
+.art-head{padding:.65rem .9rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .12s}
+.art-head:hover{background:var(--bg3)}
+.art-head h4{font-size:.9rem;font-weight:500;display:flex;align-items:center;gap:8px}
+.art-body{display:none;border-top:1px solid var(--border)}
+.art-body.open{display:block}
+.art-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.art-table tr{border-bottom:1px solid var(--border)}
+.art-table tr:last-child{border-bottom:none}
+.art-table td{padding:.45rem .9rem}
+.art-table td:first-child{color:var(--text);width:55%}
+.art-table td:nth-child(2){color:var(--text3);font-family:var(--mono);font-size:.7rem;width:25%}
+.art-table td:last-child{font-family:var(--mono);font-size:.75rem;text-align:right;width:20%}
+.art-table td:last-child.juge{color:var(--gold2)}
+.art-table td:last-child.euro{color:#2ecc71}
+.art-table tr:hover td{background:rgba(255,255,255,.02)}
+.badge-sm{font-size:.6rem;padding:2px 6px;border-radius:2px;font-family:var(--mono);background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+
+footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-size:.6rem;color:var(--text3);letter-spacing:.12em;border-top:1px solid var(--border);margin-top:2rem}
+
+/* HISTORIQUE */
+.histo-empty{text-align:center;padding:3rem 1rem;color:var(--text3);font-style:italic;font-size:.9rem}
+.histo-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:.85rem 1rem;text-align:center}
+.stat-card .sval{font-size:1.8rem;font-weight:500;color:var(--gold2);font-family:var(--mono);line-height:1}
+.stat-card .slbl{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-top:.3rem}
+.histo-filters{display:flex;gap:.5rem;margin-bottom:1rem;align-items:center}
+.histo-filters select{margin-bottom:0;width:auto;font-size:.8rem;padding:.35rem .6rem}
+.histo-filters input{margin-bottom:0;font-size:.8rem;padding:.35rem .6rem;flex:1}
+.affaire-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:.75rem;overflow:hidden;transition:border-color .15s}
+.affaire-card:hover{border-color:var(--border2)}
+.affaire-head{padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.affaire-head:hover{background:var(--bg3)}
+.affaire-info{display:flex;align-items:center;gap:.75rem}
+.affaire-verdict{font-size:.7rem;padding:3px 8px;border-radius:3px;font-family:var(--mono);font-weight:500}
+.av-guilty{background:rgba(192,57,43,.2);color:#e74c3c;border:1px solid rgba(192,57,43,.3)}
+.av-free{background:rgba(26,110,66,.2);color:#2ecc71;border:1px solid rgba(26,110,66,.3)}
+.affaire-nom{font-size:.95rem;font-weight:500}
+.affaire-date{font-size:.72rem;color:var(--text3);font-family:var(--mono)}
+.affaire-peine{font-size:.78rem;color:var(--gold2);font-family:var(--mono)}
+.affaire-body{display:none;padding:.85rem 1rem;border-top:1px solid var(--border);font-size:.85rem}
+.affaire-body.open{display:block}
+.affaire-body .inf-list{color:var(--text2);font-style:italic;margin-bottom:.6rem;line-height:1.7}
+.affaire-body .phrase-mini{background:var(--bg3);border-left:3px solid var(--gold);padding:.6rem .85rem;font-style:italic;font-size:.82rem;color:var(--text);margin-bottom:.75rem;border-radius:0 4px 4px 0}
+.affaire-actions{display:flex;gap:.5rem}
+.btn-del{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.25);color:#e74c3c;padding:.35rem .75rem;border-radius:4px;font-family:var(--mono);font-size:.7rem;cursor:pointer;transition:all .12s}
+.btn-del:hover{background:rgba(192,57,43,.2)}
+.btn-export-one{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:.35rem .75rem;border-radius:4px;font-family:var(--mono);font-size:.7rem;cursor:pointer;transition:all .12s}
+.btn-export-one:hover{color:var(--text);border-color:var(--gold)}
+.histo-top-actions{display:flex;gap:.5rem;margin-bottom:1rem;justify-content:flex-end}
+.btn-clear-all{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);color:#e74c3c;padding:.4rem .85rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer}
+.btn-export-all{background:rgba(181,137,15,.1);border:1px solid rgba(181,137,15,.25);color:var(--gold2);padding:.4rem .85rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer}
+.save-nom-wrap{display:flex;gap:.5rem;margin-top:.5rem;margin-bottom:.5rem}
+.save-nom-wrap input{margin-bottom:0;font-size:.85rem}
+.btn-save{background:var(--green);color:#fff;border:none;border-radius:4px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-save:hover{background:#22a05e}
+
+@media(max-width:768px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto}
+  .vgrid{grid-template-columns:1fr}
+  .checks{grid-template-columns:1fr}
+  main{padding:1rem}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<aside>
+  <div class="logo">
+    <span class="scales">⚖</span>
+    <h1>Tribunal de <em>Vogaria</em></h1>
+    <p>République Française · Serveur RP</p>
+  </div>
+
+  <div class="side-sec">
+    <h3>Conversion IRL</h3>
+    <table class="conv-table">
+      <tr><td>Prison normale</td><td>1 an = 7 j</td></tr>
+      <tr><td>Prison ferme</td><td>1 an = 10 j</td></tr>
+      <tr><td>Avec sursis</td><td>1 an = 14 j</td></tr>
+      <tr><td>Interdit. exercer</td><td>1 an = 10 j</td></tr>
+      <tr><td>Interdit. lieu</td><td>1 an = 5 j</td></tr>
+      <tr><td>Interdit. contact</td><td>1 an = 7 j</td></tr>
+    </table>
+  </div>
+
+  <div class="side-sec">
+    <h3>Échelle pénale</h3>
+    <table class="conv-table">
+      <tr><td>Contravention</td><td>Amende</td></tr>
+      <tr><td>Délit</td><td>≤ 10 ans</td></tr>
+      <tr><td>Crime</td><td>≥ 10 ans</td></tr>
+      <tr><td>Perpétuité</td><td>Vie entière</td></tr>
+    </table>
+  </div>
+
+  <div class="side-sec">
+    <h3>Codes</h3>
+    <div class="side-nav">
+      <a onclick="goCode('crimes')"><span class="dot" style="background:#e74c3c"></span>Crimes</a>
+      <a onclick="goCode('violences')"><span class="dot" style="background:#e67e22"></span>Violences</a>
+      <a onclick="goCode('armes')"><span class="dot" style="background:#9b59b6"></span>Armes</a>
+      <a onclick="goCode('route')"><span class="dot" style="background:#3498db"></span>Code de la route</a>
+      <a onclick="goCode('vols')"><span class="dot" style="background:#1abc9c"></span>Vols & Extorsions</a>
+      <a onclick="goCode('stupefiants')"><span class="dot" style="background:#27ae60"></span>Stupéfiants</a>
+      <a onclick="goCode('corruption')"><span class="dot" style="background:#f39c12"></span>Corruption</a>
+      <a onclick="goCode('ordre')"><span class="dot" style="background:#95a5a6"></span>Ordre public</a>
+      <a onclick="goCode('faux')"><span class="dot" style="background:#e91e63"></span>Faux & Fraudes</a>
+      <a onclick="goCode('divers')"><span class="dot" style="background:#607d8b"></span>Divers</a>
+    </div>
+  </div>
+</aside>
+
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('form',this)">Analyser une affaire</button>
+    <button class="tab-btn" onclick="switchTab('codes',this)">Infractions &amp; Amendes</button>
+    <button class="tab-btn" onclick="switchTab('histo',this)" id="tab-histo-btn">Historique <span id="histo-count" style="font-size:.65rem;opacity:.6"></span></button>
+    <button class="tab-btn" onclick="switchTab('ai',this)">⚖ LEXIA</button>
+  </div>
+
+  <!-- FORMULAIRE -->
+  <div class="pane active" id="pane-form">
+
+    <div class="fsec">
+      <div class="fsec-title">Infractions retenues</div>
+      <div class="inf-search-wrap">
+        <input type="text" id="infsearch" placeholder="Rechercher une infraction…" oninput="filterInf()">
+      </div>
+      <div class="chips-wrap" id="chips"></div>
+      <div id="inf-groups"></div>
+      <label class="flabel" style="margin-top:.9rem">Contexte / détails de l'affaire</label>
+      <textarea id="contexte" placeholder="Décrivez les faits : heure, lieu, déroulement, victimes, dommages…"></textarea>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">Preuves disponibles</div>
+      <div class="checks" id="preuves-checks">
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Témoins directs</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Caméras / vidéo</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Aveu du suspect</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Arme / objet saisi</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Rapport de police</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Expertise / ADN</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Casier judiciaire chargé</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Enregistrement audio</div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">Circonstances aggravantes</div>
+      <div class="checks" id="aggrav-checks">
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Préméditation</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Victime mineure</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Récidive légale</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Arme utilisée</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Bande organisée</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Contre agent public</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Vulnérabilité victime</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Guet-apens / embuscade</div>
+      </div>
+    </div>
+
+    <div class="fsec">
+      <div class="fsec-title">Circonstances atténuantes</div>
+      <div class="checks" id="attenu-checks">
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Regrets sincères</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Casier vierge</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Légitime défense partielle</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Coopération police</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Trouble mental partiel</div>
+        <div class="ck" onclick="toggleCk(this)"><span class="ckbox"></span> Provocation victime</div>
+      </div>
+    </div>
+
+    <button class="btn-verdict" onclick="analyser()">⚖ Rendre le verdict</button>
+
+    <div id="verdict-wrap" style="display:none" class="verdict-wrap">
+      <div class="vhdr" id="vhdr">
+        <div class="vlabel">Au nom du peuple français — Tribunal de Vogaria</div>
+        <div class="vtitle" id="vtitle">—</div>
+        <div class="vinf" id="vinf">—</div>
+      </div>
+      <div class="vgrid">
+        <div class="vcard"><h5>Peine principale</h5><div class="pv" id="peine-val">—</div><div class="pi" id="peine-irl">—</div></div>
+        <div class="vcard"><h5>Amende totale estimée</h5><div class="pv" id="amende-val" style="font-size:1.1rem">—</div><div class="pi" id="juridiction">—</div></div>
+      </div>
+      <div class="vgrid">
+        <div class="vcard"><h5>Preuves retenues</h5><div class="tags" id="preuves-tags"></div></div>
+        <div class="vcard"><h5>Circonstances</h5><div class="tags" id="circ-tags"></div></div>
+      </div>
+      <div class="proc-box"><h5>Procédure à suivre</h5><p id="proc-txt">—</p></div>
+      <div class="vcard" style="margin-bottom:.85rem"><h5>Infractions retenues &amp; peines</h5><div id="inf-detail-list"></div></div>
+      <div class="vcard" style="margin-bottom:.85rem"><h5>Mesures complémentaires</h5><div class="tags" id="mesures-tags"></div></div>
+      <div class="phrase-box" id="phrase-box">—</div>
+      <div class="btn-row">
+        <button class="btn-sm" onclick="copierVerdict()">Copier le verdict</button>
+        <button class="btn-sm" onclick="resetForm()">Nouvelle affaire</button>
+      </div>
+      <div class="fsec" style="margin-top:.85rem">
+        <div class="fsec-title">Enregistrer cette affaire</div>
+        <label class="flabel">Nom du prévenu / intitulé de l'affaire</label>
+        <div class="save-nom-wrap">
+          <input type="text" id="save-nom" placeholder="Ex: King Ban — 16/05/2026" style="margin-bottom:0">
+          <button class="btn-save" onclick="sauvegarderAffaire()">💾 Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODES TAB -->
+  <div class="pane" id="pane-codes">
+    <input type="text" id="art-search" placeholder="Rechercher une infraction…" oninput="filterArts()" style="margin-bottom:1rem">
+    <div id="codes-list"></div>
+  </div>
+
+  <!-- HISTORIQUE TAB -->
+  <div class="pane" id="pane-histo">
+    <div class="histo-stats" id="histo-stats">
+      <div class="stat-card"><div class="sval" id="stat-total">0</div><div class="slbl">Affaires jugées</div></div>
+      <div class="stat-card"><div class="sval" id="stat-coupable" style="color:#e74c3c">0</div><div class="slbl">Coupables</div></div>
+      <div class="stat-card"><div class="sval" id="stat-relaxe" style="color:#2ecc71">0</div><div class="slbl">Relaxés</div></div>
+      <div class="stat-card"><div class="sval" id="stat-amende" style="font-size:1.1rem">0 €</div><div class="slbl">Amendes totales</div></div>
+    </div>
+    <div class="histo-top-actions">
+      <button class="btn-export-all" onclick="exporterTout()">📄 Exporter tout (TXT)</button>
+      <button class="btn-clear-all" onclick="viderHistorique()">🗑 Vider l'historique</button>
+    </div>
+    <div class="histo-filters">
+      <input type="text" id="histo-search" placeholder="Rechercher une affaire…" oninput="renderHistorique()">
+      <select id="histo-filter" onchange="renderHistorique()">
+        <option value="tous">Tous</option>
+        <option value="COUPABLE">Coupables</option>
+        <option value="RELAXE">Relaxés</option>
+      </select>
+    </div>
+    <div id="histo-list"></div>
+  </div>
+
+  <!-- IA TAB -->
+  <div class="pane" id="pane-ai">
+
+    <!-- LEXIA Header -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)"></div>
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.4rem">⚖</div>
+      <div>
+        <div style="font-size:1.1rem;font-weight:500;color:var(--gold2);letter-spacing:.05em">LEXIA</div>
+        <div style="font-size:.7rem;color:var(--text3);font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase">Intelligence Artificielle Judiciaire · Tribunal de Vogaria</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px"><span style="width:6px;height:6px;border-radius:50%;background:#2ecc71;display:inline-block"></span><span style="font-size:.72rem;color:#2ecc71;font-family:var(--mono)">En ligne · Prête à analyser</span></div>
+      </div>
+    </div>
+
+    <div class="fsec" style="margin-bottom:1rem">
+      <div class="fsec-title">Consulter LEXIA</div>
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:.75rem">LEXIA peut répondre à toutes vos questions juridiques, analyser des images de dossiers, rapports d'arrestation, captures MDT, et rédiger des documents officiels.</p>
+
+      <!-- Image upload -->
+      <div style="margin-bottom:.75rem">
+        <label class="flabel">Document / Image à analyser (optionnel)</label>
+        <div id="img-drop-zone" style="border:1px dashed var(--border2);border-radius:4px;padding:1rem;text-align:center;cursor:pointer;font-size:.82rem;color:var(--text3);transition:all .12s" onclick="document.getElementById('img-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)'" ondragleave="this.style.borderColor='var(--border2)'" ondrop="handleImgDrop(event)">
+          📎 Cliquez ou glissez une image ici (MDT, rapport d'arrestation, capture Discord…)
+        </div>
+        <input type="file" id="img-input" accept="image/*" style="display:none" onchange="handleImgSelect(event)">
+        <div id="img-preview-wrap" style="display:none;margin-top:.5rem;position:relative">
+          <img id="img-preview" style="max-width:100%;max-height:200px;border-radius:4px;border:1px solid var(--border)">
+          <button onclick="clearImage()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:3px;padding:2px 8px;cursor:pointer;font-size:.75rem">✕ Retirer</button>
+        </div>
+      </div>
+
+      <!-- Message input -->
+      <label class="flabel">Votre requête à LEXIA</label>
+      <textarea id="ai-input" placeholder="Posez n'importe quelle question à LEXIA…&#10;Ex: Quelle peine pour un trafic de stupéfiants avec récidive ?&#10;Ex: Analyse ce rapport d'arrestation&#10;Ex: Rédige un mandat d'arrêt pour..." style="min-height:90px;margin-bottom:.5rem"></textarea>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <button class="btn-verdict" onclick="sendAI()" id="ai-send-btn" style="flex:1;margin-top:0">⚖ Interroger LEXIA</button>
+        <button onclick="clearChat()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:.55rem .85rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer;white-space:nowrap">Réinitialiser</button>
+      </div>
+      <div style="font-size:.68rem;color:var(--text3);font-family:var(--mono);margin-top:.4rem;text-align:right">Ctrl+Entrée pour envoyer</div>
+    </div>
+
+    <!-- Suggestions rapides -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:.5rem">Requêtes fréquentes</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="quickQ('Quelle est la peine maximale pour un homicide volontaire en droit français ?')" class="btn-sm">🔴 Peine homicide</button>
+        <button onclick="quickQ('Rédige moi une phrase officielle de verdict COUPABLE pour le Tribunal de Vogaria, style solennel')" class="btn-sm">📜 Phrase verdict</button>
+        <button onclick="quickQ('Quelle est la différence entre un crime et un délit en droit français ?')" class="btn-sm">⚖ Crime vs délit</button>
+        <button onclick="quickQ('Quelles circonstances aggravantes augmentent le plus une peine en droit français ?')" class="btn-sm">🔺 Aggravantes</button>
+        <button onclick="quickQ('Comment se déroule une audience correctionnelle en France, étape par étape ?')" class="btn-sm">🏛 Procédure audience</button>
+        <button onclick="quickQ('Rédige un mandat d'arrêt officiel pour le Tribunal de Vogaria, avec tous les champs nécessaires')" class="btn-sm">📋 Mandat d'arrêt</button>
+        <button onclick="quickQ('Convertis moi 15 ans de réclusion criminelle en jours IRL selon les règles du serveur Vogaria')" class="btn-sm">⏱ Conversion IRL</button>
+        <button onclick="quickQ('Quels sont les droits d'un accusé lors de son procès en France ?')" class="btn-sm">🧑‍⚖️ Droits accusé</button>
+      </div>
+    </div>
+
+    <!-- Chat history -->
+    <div id="ai-chat" style="display:flex;flex-direction:column;gap:.75rem"></div>
+  </div>
+
+  <footer>TRIBUNAL DE VOGARIA — DROIT FRANÇAIS — SERVEUR RP ERLC — OUTIL DU JUGE</footer>
+</main>
+</div>
+
+<script>
+// =============================================
+// BASE DE DONNÉES — Infractions du serveur
+// =============================================
+const infraDB = [
+  // CRIMES
+  {cat:'crimes', label:'Assassinat', art:'Art. 221-3 CP', amende:'Juge', type:'crime', min:20, max:99},
+  {cat:'crimes', label:'Tentative d\'assassinat', art:'Art. 221-3 CP', amende:'Juge', type:'crime', min:15, max:30},
+  {cat:'crimes', label:'Meurtre', art:'Art. 221-1 CP', amende:'Juge', type:'crime', min:15, max:30},
+  {cat:'crimes', label:'Tentative de meurtre', art:'Art. 221-1 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'crimes', label:'Homicide involontaire', art:'Art. 221-6 CP', amende:'Juge', type:'crime', min:3, max:5},
+  {cat:'crimes', label:'Homicide involontaire par conducteur ivre', art:'Art. 221-6 CP', amende:'5500', type:'crime', min:3, max:5},
+  {cat:'crimes', label:'Viol', art:'Art. 222-23 CP', amende:'Juge', type:'crime', min:15, max:20},
+  {cat:'crimes', label:'Enlèvement et séquestration', art:'Art. 224-1 CP', amende:'Juge', type:'crime', min:15, max:20},
+  {cat:'crimes', label:'Séquestration', art:'Art. 224-1 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'crimes', label:'Actes de terrorisme', art:'Art. 421-1 CP', amende:'Juge', type:'crime', min:20, max:99},
+  {cat:'crimes', label:'Torture et actes de barbarie', art:'Art. 222-1 CP', amende:'Juge', type:'crime', min:15, max:99},
+  {cat:'crimes', label:'Empoisonnement', art:'Art. 221-5 CP', amende:'Juge', type:'crime', min:10, max:30},
+  {cat:'crimes', label:'Infanticide', art:'Art. 221-4 CP', amende:'Juge', type:'crime', min:15, max:99},
+  {cat:'crimes', label:'Association de malfaiteurs', art:'Art. 450-1 CP', amende:'Juge', type:'crime', min:5, max:10},
+  {cat:'crimes', label:'Trahison', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:20, max:99},
+  {cat:'crimes', label:'Atteinte à la sûreté de l\'État', art:'Art. 410-1 CP', amende:'Juge', type:'crime', min:15, max:99},
+  {cat:'crimes', label:'Traite des êtres humains', art:'Art. 225-4-1 CP', amende:'Juge', type:'crime', min:10, max:20},
+
+  // VIOLENCES
+  {cat:'violences', label:'Violence sur agent de la force publique', art:'Art. 222-23 CP', amende:'5000', type:'délit grave', min:5, max:10},
+  {cat:'violences', label:'Violences aggravées sur agent dépositaire', art:'Art. 222-23 CP', amende:'6000', type:'délit grave', min:5, max:10},
+  {cat:'violences', label:'Violence sur fonctionnaire', art:'Art. 222-23 CP', amende:'5000', type:'délit grave', min:3, max:7},
+  {cat:'violences', label:'Violences graves', art:'Art. 222-14', amende:'5000', type:'délit grave', min:3, max:7},
+  {cat:'violences', label:'Violences avec arme', art:'Art. 222-23 CP', amende:'5000', type:'délit grave', min:5, max:10},
+  {cat:'violences', label:'Violences volontaires ITT > 8j', art:'Art. 222-7 CP', amende:'3500', type:'délit', min:3, max:5},
+  {cat:'violences', label:'Violences volontaires ITT ≤ 8j', art:'Art. 222-7 CP', amende:'3000', type:'délit', min:1, max:3},
+  {cat:'violences', label:'Coups et blessures volontaires', art:'Art. 311-1 CP', amende:'2500', type:'délit', min:1, max:3},
+  {cat:'violences', label:'Tentative de coups et blessures volontaires', art:'Art. 311-1 CP', amende:'2500', type:'délit', min:0.5, max:2},
+  {cat:'violences', label:'Violences en réunion', art:'Art. 222-23 CP', amende:'4500', type:'délit grave', min:3, max:7},
+  {cat:'violences', label:'Agression sexuelle', art:'Art. 222-27 CP', amende:'Juge', type:'crime', min:7, max:15},
+  {cat:'violences', label:'Blessures involontaires', art:'Art. 311-1 CP', amende:'3000', type:'délit', min:0.5, max:2},
+
+  // ARMES
+  {cat:'armes', label:'Port illégal d\'arme de catégorie A (arme de guerre)', art:'Art. 222-52 CP', amende:'5000', type:'délit grave', min:3, max:7},
+  {cat:'armes', label:'Port illégal d\'arme de catégorie B (arme à feu)', art:'Art. 222-52 CP', amende:'4000', type:'délit', min:2, max:5},
+  {cat:'armes', label:'Port d\'arme blanche sans motif légitime', art:'Art. 222-52 CP', amende:'1500', type:'délit', min:0.5, max:1},
+  {cat:'armes', label:'Détention illégale d\'arme à feu', art:'Art. 222-52 CP', amende:'2000', type:'délit', min:2, max:5},
+  {cat:'armes', label:'Acquisition illégale d\'arme à feu', art:'Art. 222-52 CP', amende:'4000', type:'délit grave', min:3, max:5},
+  {cat:'armes', label:'Fabrication illégale d\'arme', art:'Art. 222-52 CP', amende:'Juge', type:'crime', min:5, max:15},
+  {cat:'armes', label:'Vente illégale d\'arme', art:'Art. 222-52 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'armes', label:'Transport illégal d\'arme à feu', art:'Art. 222-52 CP', amende:'Juge', type:'délit grave', min:3, max:7},
+  {cat:'armes', label:'Contrebande d\'armes', art:'Art. 222-52 CP', amende:'6500', type:'délit grave', min:5, max:10},
+  {cat:'armes', label:'Port d\'arme dans une manifestation', art:'Art. 222-52 CP', amende:'2500', type:'délit', min:1, max:3},
+
+  // CODE DE LA ROUTE
+  {cat:'route', label:'Conduite dangereuse', art:'Art. L224-16-2 CP', amende:'1000', type:'délit', min:1, max:2},
+  {cat:'route', label:'Délit de fuite', art:'Art. L231-1 CR', amende:'2000', type:'délit', min:1, max:3},
+  {cat:'route', label:'Fuite après accident corporel', art:'Art. L231-1 CR', amende:'2000', type:'délit', min:2, max:5},
+  {cat:'route', label:'Refus d\'obtempérer à un signal de police', art:'Art. L233-1 CR', amende:'2250', type:'délit', min:1, max:3},
+  {cat:'route', label:'Refus d\'obtempérer avec mise en danger', art:'Art. L233-1 CR', amende:'2500', type:'délit grave', min:2, max:5},
+  {cat:'route', label:'Conduite sous l\'emprise de l\'alcool (≥ 0,8 g/L)', art:'Art. L221-1 CR', amende:'1750', type:'délit', min:1, max:2},
+  {cat:'route', label:'Conduite sous l\'emprise de l\'alcool (0,5-0,8 g/L)', art:'Art. L221-1 CR', amende:'1500', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Conduite sous l\'emprise de stupéfiants', art:'Art. 222-34 CP', amende:'1000', type:'délit', min:1, max:2},
+  {cat:'route', label:'Conduite sous alcool + stupéfiants', art:'Art. 222-34 CP', amende:'3000', type:'délit grave', min:2, max:5},
+  {cat:'route', label:'Grand excès de vitesse (≥50 km/h)', art:'Art. R413-1 CR', amende:'1850', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Excès de vitesse (25-36 km/h)', art:'Art. R413-14 CR', amende:'550', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Excès de vitesse (11-25 km/h)', art:'Art. R413-14 CR', amende:'450', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Excès de vitesse (0-11 km/h)', art:'Art. R413-14 CR', amende:'350', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Non-respect d\'un feu rouge', art:'Art. 121-2 CP', amende:'550', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Non-port de la ceinture', art:'Art. 222-52 CP', amende:'250', type:'contravention', min:0, max:0},
+  {cat:'route', label:'Rodéo urbain', art:'Art. L236-1 CR', amende:'2350', type:'délit', min:1, max:2},
+  {cat:'route', label:'Conduite d\'un véhicule non assuré', art:'Art. L221-1 CR', amende:'1000', type:'délit', min:0.5, max:1},
+  {cat:'route', label:'Fausse plaque / plaque non conforme', art:'Art. L317-2', amende:'3500', type:'délit', min:1, max:2},
+  {cat:'route', label:'Mise en danger par conducteur', art:'Art. 121-2 CP', amende:'2250', type:'délit', min:1, max:3},
+
+  // VOLS & EXTORSIONS
+  {cat:'vols', label:'Vol à main armée', art:'Art. 311-1 CP', amende:'6750', type:'crime', min:15, max:20},
+  {cat:'vols', label:'Vol avec violence', art:'Art. 222-23 CP', amende:'6750', type:'délit grave', min:5, max:10},
+  {cat:'vols', label:'Vol avec effraction', art:'Art. 311-1 CP', amende:'7000', type:'délit grave', min:5, max:10},
+  {cat:'vols', label:'Vol avec arme', art:'Art. 311-1 CP', amende:'6750', type:'délit grave', min:5, max:10},
+  {cat:'vols', label:'Vol aggravé en bande organisée', art:'Art. 311-1 CP', amende:'7750', type:'crime', min:10, max:20},
+  {cat:'vols', label:'Vol de véhicule', art:'Art. 311-1 CP', amende:'6750', type:'délit grave', min:3, max:7},
+  {cat:'vols', label:'Vol en réunion', art:'Art. 311-1 CP', amende:'6500', type:'délit grave', min:3, max:7},
+  {cat:'vols', label:'Vol simple', art:'Art. 311-1 CP', amende:'5500', type:'délit', min:1, max:3},
+  {cat:'vols', label:'Vol à l\'arraché', art:'Art. 311-1 CP', amende:'6000', type:'délit grave', min:3, max:5},
+  {cat:'vols', label:'Tentative de vol', art:'Art. 311-1 CP', amende:'5500', type:'délit', min:0.5, max:2},
+  {cat:'vols', label:'Extorsion', art:'Art. 312-1 CP', amende:'4000', type:'délit grave', min:5, max:7},
+  {cat:'vols', label:'Extorsion avec arme', art:'Art. 312-1 CP', amende:'5500', type:'délit grave', min:7, max:10},
+  {cat:'vols', label:'Cambriolage de résidence principale', art:'Art. 121-2 CP', amende:'6500', type:'délit grave', min:3, max:7},
+  {cat:'vols', label:'Recel de produit d\'un crime', art:'Art. 321-1 CP', amende:'7500', type:'délit grave', min:5, max:10},
+  {cat:'vols', label:'Recel aggravé', art:'Art. 321-1 CP', amende:'7000', type:'délit grave', min:5, max:10},
+  {cat:'vols', label:'Prise d\'otage pour extorsion', art:'Art. 312-1 CP', amende:'Juge', type:'crime', min:15, max:20},
+
+  // STUPÉFIANTS
+  {cat:'stupefiants', label:'Trafic de stupéfiants', art:'Art. 222-37 CP', amende:'Juge', type:'crime', min:10, max:30},
+  {cat:'stupefiants', label:'Trafic en bande organisée', art:'Art. 222-37 CP', amende:'Juge', type:'crime', min:15, max:30},
+  {cat:'stupefiants', label:'Cession ou offre de stupéfiants', art:'Art. 222-34 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'stupefiants', label:'Détention de stupéfiants', art:'Art. 222-34 CP', amende:'8500', type:'délit grave', min:3, max:5},
+  {cat:'stupefiants', label:'Transport de stupéfiants', art:'Art. 222-34 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'stupefiants', label:'Importation de stupéfiants', art:'Art. 222-34 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'stupefiants', label:'Usage de stupéfiants', art:'Art. 222-34 CP', amende:'Juge', type:'délit', min:0.5, max:1},
+  {cat:'stupefiants', label:'Usage de cocaïne', art:'Art. 222-34 CP', amende:'Juge', type:'délit', min:0.5, max:1},
+  {cat:'stupefiants', label:'Usage de cannabis', art:'Art. 222-37 CP', amende:'Juge', type:'délit', min:0.3, max:1},
+  {cat:'stupefiants', label:'Contrebande de stupéfiants', art:'Art. 222-34 CP', amende:'6500', type:'délit grave', min:5, max:10},
+  {cat:'stupefiants', label:'Culture de cannabis', art:'Art. 222-37 CP', amende:'Juge', type:'délit grave', min:3, max:7},
+
+  // CORRUPTION & ORDRE PUBLIC
+  {cat:'corruption', label:'Corruption active', art:'Art. 432-11 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'corruption', label:'Corruption passive', art:'Art. 432-11 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'corruption', label:'Corruption de témoin', art:'Art. 432-11 CP', amende:'Juge', type:'délit grave', min:3, max:7},
+  {cat:'corruption', label:'Tentative de corruption d\'agent public', art:'Art. 432-11 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'corruption', label:'Tentative de corruption d\'un magistrat', art:'Art. 432-11 CP', amende:'Juge', type:'crime', min:7, max:15},
+  {cat:'corruption', label:'Concussion', art:'Art. 432-11 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'corruption', label:'Détournement de fonds publics', art:'Art. 432-15 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'corruption', label:'Blanchiment de capitaux', art:'Art. 324-1 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+
+  // ORDRE PUBLIC
+  {cat:'ordre', label:'Outrage à agent de la force publique', art:'Art. 433-5 CP', amende:'4000', type:'délit', min:0.5, max:1},
+  {cat:'ordre', label:'Outrage à dépositaire de l\'autorité publique', art:'Art. 433-5 CP', amende:'4000', type:'délit', min:0.5, max:1},
+  {cat:'ordre', label:'Outrage à magistrat', art:'Art. 433-5 CP', amende:'4000', type:'délit', min:0.5, max:1},
+  {cat:'ordre', label:'Rébellion', art:'Art. 433-6 CP', amende:'5500', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Rébellion armée', art:'Art. 433-6 CP', amende:'6000', type:'délit grave', min:3, max:7},
+  {cat:'ordre', label:'Menaces contre agent de la force publique', art:'Art. 222-17 CP', amende:'3000', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Menace contre un magistrat', art:'Art. 222-17 CP', amende:'3000', type:'délit grave', min:3, max:7},
+  {cat:'ordre', label:'Menaces de mort publiques', art:'Art. 222-17 CP', amende:'3000', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Mise en danger d\'autrui', art:'Art. 121-2 CP', amende:'2500', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Trouble à l\'ordre public sur voie publique', art:'Art. 121-2 CP', amende:'2500', type:'contravention', min:0, max:0},
+  {cat:'ordre', label:'Troubles à l\'ordre public', art:'Art. 121-2 CP', amende:'3000', type:'contravention', min:0, max:0},
+  {cat:'ordre', label:'Tapage nocturne', art:'Art. 121-2 CP', amende:'2000', type:'contravention', min:0, max:0},
+  {cat:'ordre', label:'Usurpation d\'identité', art:'Art. 121-2 CP', amende:'Juge', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Usurpation de titre ou de fonctions', art:'Art. 121-2 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'ordre', label:'Non-assistance à personne en danger', art:'Art. 223-6 CP', amende:'5500', type:'délit', min:1, max:3},
+  {cat:'ordre', label:'Entrave à l\'action de la justice', art:'Art. 433-7 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'ordre', label:'Non-comparution devant la justice', art:'Art. 121-2 CP', amende:'3000', type:'délit', min:0.5, max:1},
+  {cat:'ordre', label:'Ivresse publique et manifeste', art:'Art. 121-2 CP', amende:'2000', type:'contravention', min:0, max:0},
+  {cat:'ordre', label:'Participation à une bande armée', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'ordre', label:'Évasion', art:'Art. 121-2 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'ordre', label:'Aide à l\'évasion', art:'Art. 121-2 CP', amende:'Juge', type:'délit grave', min:2, max:5},
+
+  // FAUX & FRAUDES
+  {cat:'faux', label:'Faux en écriture publique ou authentique', art:'Art. 441-1 CP', amende:'Juge', type:'délit grave', min:3, max:7},
+  {cat:'faux', label:'Faux témoignage', art:'Art. 441-1 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'faux', label:'Falsification de document d\'identité', art:'Art. 441-1 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'faux', label:'Usage de faux document d\'identité', art:'Art. 441-1 CP', amende:'Juge', type:'délit', min:1, max:3},
+  {cat:'faux', label:'Usage de faux document administratif', art:'Art. 441-1 CP', amende:'Juge', type:'délit', min:1, max:3},
+  {cat:'faux', label:'Escroquerie', art:'Art. 313-1 CP', amende:'4000', type:'délit', min:2, max:5},
+  {cat:'faux', label:'Escroquerie en bande organisée', art:'Art. 313-1 CP', amende:'5000', type:'délit grave', min:5, max:10},
+  {cat:'faux', label:'Fraude électorale', art:'Art. 313-1 CP', amende:'3000', type:'délit', min:1, max:3},
+  {cat:'faux', label:'Fraude fiscale', art:'Art. 313-1 CP', amende:'Juge', type:'délit grave', min:3, max:7},
+  {cat:'faux', label:'Abus de confiance', art:'Art. 314-1 CP', amende:'4000', type:'délit', min:2, max:5},
+  {cat:'faux', label:'Contrefaçon de monnaie', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'faux', label:'Banqueroute frauduleuse', art:'Art. 121-2 CP', amende:'Juge', type:'délit grave', min:5, max:10},
+  {cat:'faux', label:'Destruction de preuves', art:'Art. 322-1 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+  {cat:'faux', label:'Altération de preuves', art:'Art. 121-2 CP', amende:'Juge', type:'délit grave', min:3, max:5},
+
+  // DIVERS
+  {cat:'divers', label:'Dégradation de bien public', art:'Art. 322-1 CP', amende:'4000', type:'délit', min:1, max:3},
+  {cat:'divers', label:'Incendie volontaire', art:'Art. 311-1 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'divers', label:'Sabotage', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:10, max:20},
+  {cat:'divers', label:'Harcèlement moral', art:'Art. 222-33 CP', amende:'3000', type:'délit', min:0.5, max:2},
+  {cat:'divers', label:'Chantage', art:'Art. 121-2 CP', amende:'4000', type:'délit', min:2, max:5},
+  {cat:'divers', label:'Proxénétisme', art:'Art. 225-5 CP', amende:'Juge', type:'crime', min:7, max:15},
+  {cat:'divers', label:'Exploitation de la prostitution', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:7, max:15},
+  {cat:'divers', label:'Diffamation envers un fonctionnaire', art:'Art. 121-2 CP', amende:'2500', type:'délit', min:0.3, max:1},
+  {cat:'divers', label:'Port illégal de décoration ou uniforme', art:'Art. 222-52 CP', amende:'4000', type:'délit', min:1, max:2},
+  {cat:'divers', label:'Participation à un attroupement armé', art:'Art. 121-2 CP', amende:'3500', type:'délit', min:1, max:3},
+  {cat:'divers', label:'Dégradation par incendie', art:'Art. 322-1 CP', amende:'4000', type:'délit grave', min:3, max:7},
+  {cat:'divers', label:'Mise en péril de mineur', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:7, max:15},
+  {cat:'divers', label:'Espionnage', art:'Art. 121-2 CP', amende:'Juge', type:'crime', min:15, max:30},
+];
+
+const catLabels = {
+  crimes: '🔴 Crimes',
+  violences: '🟠 Violences',
+  armes: '🟣 Armes',
+  route: '🔵 Code de la route',
+  vols: '🟢 Vols & Extorsions',
+  stupefiants: '🌿 Stupéfiants',
+  corruption: '🟡 Corruption & Finances',
+  ordre: '⚪ Ordre public',
+  faux: '🔷 Faux & Fraudes',
+  divers: '⬛ Divers',
+};
+
+const preuveLabels = ['Témoins directs','Caméras/vidéo','Aveu du suspect','Arme/objet saisi','Rapport de police','Expertise/ADN','Casier chargé','Enregistrement audio'];
+const aggravLabels = ['Préméditation','Victime mineure','Récidive légale','Arme utilisée','Bande organisée','Contre agent public','Vulnérabilité victime','Guet-apens'];
+const attenuLabels = ['Regrets sincères','Casier vierge','Légitime défense partielle','Coopération police','Trouble mental partiel','Provocation victime'];
+
+const selectedInf = new Set();
+
+// BUILD INFRACTION GROUPS
+function buildInfGroups() {
+  const cats = [...new Set(infraDB.map(i => i.cat))];
+  const container = document.getElementById('inf-groups');
+  container.innerHTML = cats.map(cat => {
+    const items = infraDB.filter(i => i.cat === cat);
+    return `<div class="cat-group" id="catg-${cat}">
+      <div class="cat-head" onclick="toggleCat(this)"><span>${catLabels[cat]}</span><span style="font-size:.7rem;color:var(--text3)">${items.length} ▼</span></div>
+      <div class="cat-body">
+        ${items.map((inf,idx) => {
+          const key = cat+'_'+idx;
+          const badgeClass = inf.amende === 'Juge' ? 'juge' : '';
+          const badgeText = inf.amende === 'Juge' ? 'Juge' : parseInt(inf.amende).toLocaleString('fr-FR')+'€';
+          return `<div class="inf-opt" data-key="${key}" data-search="${inf.label.toLowerCase()} ${inf.art.toLowerCase()}" onclick="toggleInf(this,'${key}')">${inf.label}<span>${inf.art} <span class="amende-badge ${badgeClass}">${badgeText}</span></span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  // store key->inf map
+  cats.forEach(cat => {
+    const items = infraDB.filter(i => i.cat === cat);
+    items.forEach((inf,idx) => { infMap[cat+'_'+idx] = inf; });
+  });
+}
+
+const infMap = {};
+
+function toggleCat(head) { head.nextElementSibling.classList.toggle('open'); }
+
+function toggleInf(el, key) {
+  if (selectedInf.has(key)) { selectedInf.delete(key); el.classList.remove('sel'); }
+  else { selectedInf.add(key); el.classList.add('sel'); }
+  updateChips();
+}
+
+function updateChips() {
+  const c = document.getElementById('chips');
+  c.innerHTML = '';
+  selectedInf.forEach(key => {
+    const d = infMap[key]; if (!d) return;
+    const ch = document.createElement('span');
+    ch.className = 'chip';
+    ch.innerHTML = d.label + ' <button onclick="removeInf(\'' + key + '\')">×</button>';
+    c.appendChild(ch);
+  });
+}
+
+function removeInf(key) {
+  selectedInf.delete(key);
+  const el = document.querySelector(`.inf-opt[data-key="${key}"]`);
+  if (el) el.classList.remove('sel');
+  updateChips();
+}
+
+function filterInf() {
+  const q = document.getElementById('infsearch').value.toLowerCase().trim();
+  document.querySelectorAll('.inf-opt').forEach(el => {
+    el.classList.toggle('hidden', q !== '' && !el.dataset.search.includes(q));
+  });
+  if (q) document.querySelectorAll('.cat-body').forEach(b => b.classList.add('open'));
+}
+
+function toggleCk(el) {
+  el.classList.toggle('on');
+  el.querySelector('.ckbox').textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+function getCheckedLabels(containerId, labels) {
+  const items = document.querySelectorAll('#' + containerId + ' .ck');
+  return labels.filter((_, i) => items[i] && items[i].classList.contains('on'));
+}
+
+function analyser() {
+  if (selectedInf.size === 0) { alert('Veuillez sélectionner au moins une infraction.'); return; }
+
+  const keys = Array.from(selectedInf);
+  const allData = keys.map(k => infMap[k]).filter(Boolean);
+  const contexte = document.getElementById('contexte').value;
+  const preuves = getCheckedLabels('preuves-checks', preuveLabels);
+  const aggrav = getCheckedLabels('aggrav-checks', aggravLabels);
+  const attenu = getCheckedLabels('attenu-checks', attenuLabels);
+
+  const typeOrder = ['contravention','délit','délit grave','crime'];
+  allData.sort((a,b) => typeOrder.indexOf(b.type) - typeOrder.indexOf(a.type));
+  const principal = allData[0];
+  const nbAgg = aggrav.length, nbAtt = attenu.length;
+
+  // Calcul amende totale
+  let totalAmende = 0;
+  let hasJuge = false;
+  allData.forEach(d => {
+    if (d.amende === 'Juge') hasJuge = true;
+    else totalAmende += parseInt(d.amende) || 0;
+  });
+  const amendeStr = hasJuge
+    ? (totalAmende > 0 ? totalAmende.toLocaleString('fr-FR') + ' € + montant fixé par le juge' : 'Montant fixé par le juge')
+    : totalAmende.toLocaleString('fr-FR') + ' €';
+
+  let verdict, vClass, peinePrincipale, peineIRL, procedure, juridiction;
+  const mesures = [];
+
+  if (preuves.length === 0) {
+    verdict = 'RELAXE'; vClass = 'free';
+    peinePrincipale = 'Relaxe — insuffisance de preuves';
+    peineIRL = 'Aucune peine prononcée';
+    procedure = 'Le dossier est classé sans suite. Le suspect est remis en liberté immédiatement.';
+    juridiction = 'Classement sans suite';
+  } else {
+    verdict = 'COUPABLE'; vClass = 'guilty';
+    if (principal.type === 'contravention' && allData.length === 1) {
+      peinePrincipale = 'Amende : ' + (parseInt(principal.amende) || 0).toLocaleString('fr-FR') + ' €';
+      peineIRL = 'Traitement immédiat'; juridiction = 'Tribunal de Police';
+      procedure = 'Comparution immédiate pour contravention. Amende exigible immédiatement.';
+    } else {
+      let min = principal.min, max = principal.max;
+      if (nbAgg >= 3) max = Math.min(max * 1.5, 99);
+      if (nbAtt >= 2) min = Math.max(min * 0.6, 0.3);
+      let rec = (min + max) / 2;
+      if (nbAgg > nbAtt) rec *= (1 + nbAgg * 0.08);
+      if (nbAtt > nbAgg) rec *= (1 - nbAtt * 0.06);
+      rec = Math.max(Math.min(rec, max), min);
+      const annees = Math.round(rec * 10) / 10;
+
+      if (annees < 1) {
+        peinePrincipale = Math.round(annees * 12) + ' mois d\'emprisonnement';
+        peineIRL = Math.round(annees * 7) + ' jours IRL';
+      } else if (annees >= 99) {
+        peinePrincipale = 'Réclusion criminelle à perpétuité'; peineIRL = 'Perpétuité';
+      } else {
+        peinePrincipale = annees + ' an' + (annees > 1 ? 's' : '') + (principal.type === 'crime' ? ' de réclusion criminelle' : ' d\'emprisonnement');
+        peineIRL = Math.round(annees * (principal.type === 'crime' ? 10 : 7)) + ' jours IRL';
+      }
+
+      if (principal.type === 'crime') {
+        juridiction = 'Cour d\'Assises';
+        procedure = 'Instruction judiciaire obligatoire. Convoquer le juge d\'instruction, le procureur et la défense. Détention provisoire ordonnée.';
+        mesures.push('Détention provisoire','Mandat de dépôt','Instruction judiciaire');
+      } else if (principal.type === 'délit grave') {
+        juridiction = 'Tribunal Correctionnel';
+        procedure = 'Audience sous 48-72h. Convoquer procureur et défense. Comparution immédiate possible.';
+        mesures.push('Garde à vue prolongée');
+      } else {
+        juridiction = 'Tribunal Correctionnel';
+        procedure = 'Comparution immédiate possible. Convoquer les parties dans les meilleurs délais.';
+      }
+    }
+    if (aggrav.includes('Récidive légale')) mesures.push('Peine plancher applicable');
+    if (aggrav.includes('Arme utilisée') || aggrav.includes('Bande organisée')) mesures.push('Saisie armes et biens');
+    if (allData.some(d => d.cat === 'route')) mesures.push('Retrait de permis immédiat','Immobilisation véhicule');
+    if (aggrav.includes('Contre agent public')) mesures.push('Circonstance aggravante officielle retenue');
+  }
+
+  const infraLabels = allData.map(d => d.label + ' (' + d.art + ')').join(' · ');
+  document.getElementById('vhdr').className = 'vhdr ' + vClass;
+  document.getElementById('vtitle').className = 'vtitle ' + vClass;
+  document.getElementById('vtitle').textContent = verdict;
+  document.getElementById('vinf').textContent = infraLabels;
+  document.getElementById('peine-val').textContent = peinePrincipale;
+  document.getElementById('peine-irl').textContent = peineIRL;
+  document.getElementById('amende-val').textContent = preuves.length === 0 ? 'Aucune' : amendeStr;
+  document.getElementById('juridiction').textContent = juridiction;
+  document.getElementById('proc-txt').textContent = procedure;
+
+  const pt = document.getElementById('preuves-tags');
+  pt.innerHTML = preuves.length > 0 ? preuves.map(p => `<span class="tag tag-g">${p}</span>`).join('') : '<span class="tag tag-r">Aucune preuve</span>';
+
+  const ct = document.getElementById('circ-tags');
+  ct.innerHTML = aggrav.map(a => `<span class="tag tag-r">${a}</span>`).join('') + attenu.map(a => `<span class="tag tag-a">${a}</span>`).join('') || '<span class="tag tag-a">Aucune circonstance</span>';
+
+  const dl = document.getElementById('inf-detail-list');
+  dl.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:.8rem">' +
+    allData.map(d => `<tr style="border-bottom:1px solid var(--border)"><td style="padding:.4rem .2rem;color:var(--text)">${d.label}</td><td style="color:var(--text3);font-family:var(--mono);font-size:.7rem;padding:.4rem .2rem">${d.art}</td><td style="text-align:right;font-family:var(--mono);font-size:.75rem;padding:.4rem .2rem;color:${d.amende==='Juge'?'var(--gold2)':'#2ecc71'}">${d.amende==='Juge'?'Juge':parseInt(d.amende).toLocaleString('fr-FR')+' €'}</td></tr>`).join('') + '</table>';
+
+  const mt = document.getElementById('mesures-tags');
+  mt.innerHTML = mesures.length > 0 ? mesures.map(m => `<span class="tag tag-b">${m}</span>`).join('') : '<span class="tag tag-a">Aucune mesure complémentaire</span>';
+
+  const date = new Date().toLocaleDateString('fr-FR');
+  document.getElementById('phrase-box').innerHTML = verdict === 'RELAXE'
+    ? `Au nom du peuple français, le Tribunal de Vogaria, en date du ${date}, déclare l'accusé <strong>non coupable</strong> des faits qui lui sont reprochés, faute de preuves suffisantes. L'accusé est remis en liberté immédiate.`
+    : `Au nom du peuple français, le Tribunal de Vogaria, en date du ${date}, déclare l'accusé <strong>coupable</strong> des faits de <em>${allData[0].label}</em> (${allData[0].art}) et le condamne à <strong>${peinePrincipale}</strong> (soit <strong>${peineIRL}</strong> sur le serveur) et à une amende de <strong>${amendeStr}</strong>.${contexte ? ' Contexte retenu : ' + contexte + '.' : ''} La présente décision est rendue publiquement et est immédiatement exécutoire.`;
+
+  const vw = document.getElementById('verdict-wrap');
+  vw.style.display = 'block';
+  vw.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function copierVerdict() {
+  navigator.clipboard.writeText(document.getElementById('verdict-wrap').innerText);
+  const btn = event.target; btn.textContent = 'Copié !';
+  setTimeout(() => btn.textContent = 'Copier le verdict', 2000);
+}
+
+function resetForm() {
+  selectedInf.clear();
+  updateChips();
+  document.querySelectorAll('.inf-opt').forEach(el => el.classList.remove('sel'));
+  document.getElementById('contexte').value = '';
+  document.getElementById('infsearch').value = '';
+  document.querySelectorAll('.ck').forEach(el => { el.classList.remove('on'); el.querySelector('.ckbox').textContent = ''; });
+  document.getElementById('verdict-wrap').style.display = 'none';
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + tab).classList.add('active');
+  if (tab === 'histo') renderHistorique();
+}
+
+function goCode(cat) {
+  document.querySelectorAll('.tab-btn')[1].click();
+  setTimeout(() => {
+    const el = document.getElementById('code-' + cat);
+    if (el) { el.scrollIntoView({behavior:'smooth'}); el.querySelector('.art-body').classList.add('open'); }
+  }, 80);
+}
+
+// BUILD CODES TAB
+function buildCodes() {
+  const cats = [...new Set(infraDB.map(i => i.cat))];
+  const container = document.getElementById('codes-list');
+  container.innerHTML = cats.map(cat => {
+    const items = infraDB.filter(i => i.cat === cat);
+    return `<div class="art-sec" id="code-${cat}">
+      <div class="art-head" onclick="toggleCode('${cat}')">
+        <h4><span class="dot" style="background:${catColor(cat)}"></span>${catLabels[cat]}</h4>
+        <span class="badge-sm">${items.length} infractions</span>
+      </div>
+      <div class="art-body" id="body-${cat}">
+        <table class="art-table">
+          <thead><tr style="border-bottom:1px solid var(--border2)"><td style="color:var(--text3);font-family:var(--mono);font-size:.65rem;padding:.4rem .9rem">INFRACTION</td><td style="color:var(--text3);font-family:var(--mono);font-size:.65rem">ARTICLE</td><td style="color:var(--text3);font-family:var(--mono);font-size:.65rem;text-align:right">AMENDE</td></tr></thead>
+          <tbody>
+            ${items.map(inf => `<tr data-s="${inf.label.toLowerCase()} ${inf.art.toLowerCase()}"><td>${inf.label}</td><td>${inf.art}</td><td class="${inf.amende==='Juge'?'juge':'euro'}">${inf.amende==='Juge'?'Juge':parseInt(inf.amende).toLocaleString('fr-FR')+' €'}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function catColor(cat) {
+  const colors = {crimes:'#e74c3c',violences:'#e67e22',armes:'#9b59b6',route:'#3498db',vols:'#1abc9c',stupefiants:'#27ae60',corruption:'#f39c12',ordre:'#95a5a6',faux:'#e91e63',divers:'#607d8b'};
+  return colors[cat] || '#888';
+}
+
+function toggleCode(id) { document.getElementById('body-'+id).classList.toggle('open'); }
+
+function filterArts() {
+  const q = document.getElementById('art-search').value.toLowerCase().trim();
+  document.querySelectorAll('.art-sec').forEach(sec => {
+    let has = false;
+    sec.querySelectorAll('tbody tr').forEach(row => {
+      const match = !q || row.dataset.s.includes(q);
+      row.style.display = match ? '' : 'none';
+      if (match) has = true;
+    });
+    sec.style.display = (has || !q) ? '' : 'none';
+    if (q && has) sec.querySelector('.art-body').classList.add('open');
+  });
+}
+
+buildInfGroups();
+buildCodes();
+
+// =============================================
+// HISTORIQUE — localStorage
+// =============================================
+let histoData = [];
+
+function loadHisto() {
+  try { histoData = JSON.parse(localStorage.getItem('tribunal_histo') || '[]'); } catch(e) { histoData = []; }
+  renderHistorique();
+  updateHistoCount();
+}
+
+function saveHisto() {
+  localStorage.setItem('tribunal_histo', JSON.stringify(histoData));
+  updateHistoCount();
+}
+
+function updateHistoCount() {
+  const el = document.getElementById('histo-count');
+  if (el) el.textContent = histoData.length > 0 ? '(' + histoData.length + ')' : '';
+}
+
+// Capture le verdict actuel et le sauvegarde
+let lastVerdict = null;
+
+function sauvegarderAffaire() {
+  if (!lastVerdict) { alert('Aucun verdict généré. Rendez le verdict d\'abord.'); return; }
+  const nom = document.getElementById('save-nom').value.trim() || 'Affaire sans nom';
+  const affaire = {
+    id: Date.now(),
+    nom,
+    date: new Date().toLocaleDateString('fr-FR'),
+    ...lastVerdict
+  };
+  histoData.unshift(affaire);
+  saveHisto();
+  renderHistorique();
+  document.getElementById('save-nom').value = '';
+  const btn = document.querySelector('.btn-save');
+  btn.textContent = '✅ Sauvegardé !';
+  setTimeout(() => btn.textContent = '💾 Sauvegarder', 2000);
+}
+
+function supprimerAffaire(id) {
+  if (!confirm('Supprimer cette affaire ?')) return;
+  histoData = histoData.filter(a => a.id !== id);
+  saveHisto();
+  renderHistorique();
+}
+
+function viderHistorique() {
+  if (!confirm('Vider tout l\'historique ? Cette action est irréversible.')) return;
+  histoData = [];
+  saveHisto();
+  renderHistorique();
+}
+
+function exporterTout() {
+  if (histoData.length === 0) { alert('Aucune affaire dans l\'historique.'); return; }
+  let txt = '=== REGISTRE DES AFFAIRES — TRIBUNAL DE VOGARIA ===\n';
+  txt += 'Exporté le ' + new Date().toLocaleDateString('fr-FR') + '\n\n';
+  histoData.forEach((a, i) => {
+    txt += '─'.repeat(60) + '\n';
+    txt += `AFFAIRE N°${histoData.length - i} — ${a.nom}\n`;
+    txt += `Date : ${a.date}\n`;
+    txt += `Verdict : ${a.verdict}\n`;
+    txt += `Peine : ${a.peinePrincipale}\n`;
+    txt += `IRL : ${a.peineIRL}\n`;
+    txt += `Amende : ${a.amendeStr}\n`;
+    txt += `Infractions : ${a.infraLabels}\n`;
+    txt += `\n${a.phraseOfficielle}\n\n`;
+  });
+  const blob = new Blob([txt], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tribunal_vogaria_registre.txt';
+  a.click();
+}
+
+function exporterAffaire(id) {
+  const a = histoData.find(x => x.id === id);
+  if (!a) return;
+  let txt = `TRIBUNAL DE VOGARIA — ${a.nom}\n`;
+  txt += `Date : ${a.date}\n`;
+  txt += `Verdict : ${a.verdict}\n`;
+  txt += `Peine : ${a.peinePrincipale} (${a.peineIRL})\n`;
+  txt += `Amende : ${a.amendeStr}\n`;
+  txt += `Infractions : ${a.infraLabels}\n\n`;
+  txt += a.phraseOfficielle;
+  const blob = new Blob([txt], {type:'text/plain'});
+  const el = document.createElement('a');
+  el.href = URL.createObjectURL(blob);
+  el.download = 'affaire_' + a.nom.replace(/[^a-z0-9]/gi,'_') + '.txt';
+  el.click();
+}
+
+function renderHistorique() {
+  const q = (document.getElementById('histo-search')?.value || '').toLowerCase();
+  const f = document.getElementById('histo-filter')?.value || 'tous';
+  let liste = histoData.filter(a => {
+    const matchQ = !q || a.nom.toLowerCase().includes(q) || (a.infraLabels||'').toLowerCase().includes(q);
+    const matchF = f === 'tous' || a.verdict === f;
+    return matchQ && matchF;
+  });
+
+  // Stats
+  const total = histoData.length;
+  const coupables = histoData.filter(a => a.verdict === 'COUPABLE').length;
+  const relaxes = histoData.filter(a => a.verdict === 'RELAXE').length;
+  const totalAmende = histoData.reduce((sum, a) => {
+    const n = parseInt((a.amendeStr||'').replace(/[^\d]/g,'')) || 0;
+    return sum + n;
+  }, 0);
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-coupable').textContent = coupables;
+  document.getElementById('stat-relaxe').textContent = relaxes;
+  document.getElementById('stat-amende').textContent = totalAmende.toLocaleString('fr-FR') + ' €';
+
+  const container = document.getElementById('histo-list');
+  if (liste.length === 0) {
+    container.innerHTML = '<div class="histo-empty">Aucune affaire enregistrée.</div>';
+    return;
+  }
+  container.innerHTML = liste.map((a, i) => `
+    <div class="affaire-card">
+      <div class="affaire-head" onclick="toggleAffaire(${a.id})">
+        <div class="affaire-info">
+          <span class="affaire-verdict ${a.verdict==='COUPABLE'?'av-guilty':'av-free'}">${a.verdict}</span>
+          <div>
+            <div class="affaire-nom">${a.nom}</div>
+            <div class="affaire-date">${a.date}</div>
+          </div>
+        </div>
+        <div class="affaire-peine">${a.peinePrincipale}</div>
+      </div>
+      <div class="affaire-body" id="aff-${a.id}">
+        <div class="inf-list">${(a.infraLabels||'').replace(/·/g,'<br>·')}</div>
+        <div class="phrase-mini">${a.phraseOfficielle||''}</div>
+        <div class="affaire-actions">
+          <button class="btn-export-one" onclick="exporterAffaire(${a.id})">📄 Exporter</button>
+          <button class="btn-del" onclick="supprimerAffaire(${a.id})">🗑 Supprimer</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleAffaire(id) {
+  const el = document.getElementById('aff-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+// Patch analyser pour capturer le verdict
+const _analyserOrig = analyser;
+analyser = function() {
+  _analyserOrig();
+  // Capturer après génération
+  setTimeout(() => {
+    const vw = document.getElementById('verdict-wrap');
+    if (vw && vw.style.display !== 'none') {
+      lastVerdict = {
+        verdict: document.getElementById('vtitle')?.textContent || '',
+        peinePrincipale: document.getElementById('peine-val')?.textContent || '',
+        peineIRL: document.getElementById('peine-irl')?.textContent || '',
+        amendeStr: document.getElementById('amende-val')?.textContent || '',
+        infraLabels: document.getElementById('vinf')?.textContent || '',
+        phraseOfficielle: document.getElementById('phrase-box')?.innerText || '',
+        juridiction: document.getElementById('juridiction')?.textContent || '',
+      };
+    }
+  }, 100);
+};
+
+loadHisto();
+
+// =============================================
+// ASSISTANT IA — Claude API
+// =============================================
+let aiHistory = [];
+let currentImageB64 = null;
+let currentImageType = null;
+
+function quickQ(q) {
+  document.getElementById('ai-input').value = q;
+  sendAI();
+}
+
+function handleImgSelect(e) {
+  const file = e.target.files[0];
+  if (file) loadImage(file);
+}
+
+function handleImgDrop(e) {
+  e.preventDefault();
+  document.getElementById('img-drop-zone').style.borderColor = 'var(--border2)';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) loadImage(file);
+}
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const result = ev.target.result;
+    currentImageB64 = result.split(',')[1];
+    currentImageType = file.type;
+    document.getElementById('img-preview').src = result;
+    document.getElementById('img-preview-wrap').style.display = 'block';
+    document.getElementById('img-drop-zone').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage() {
+  currentImageB64 = null;
+  currentImageType = null;
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('img-drop-zone').style.display = 'block';
+  document.getElementById('img-input').value = '';
+}
+
+function clearChat() {
+  aiHistory = [];
+  document.getElementById('ai-chat').innerHTML = '';
+  clearImage();
+  document.getElementById('ai-input').value = '';
+}
+
+function addMsg(role, content, isImg) {
+  const chat = document.getElementById('ai-chat');
+  const isUser = role === 'user';
+  const div = document.createElement('div');
+  div.style.cssText = `display:flex;flex-direction:column;align-items:${isUser?'flex-end':'flex-start'};gap:4px`;
+  div.innerHTML = `
+    <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);font-family:var(--mono)">${isUser?'Juge Holloway Darnell':'LEXIA · IA Judiciaire'}</div>
+    ${isImg?`<img src="${isImg}" style="max-width:200px;border-radius:4px;border:1px solid var(--border);margin-bottom:4px">`:''}
+    <div style="max-width:85%;background:${isUser?'rgba(181,137,15,.12)':'var(--bg2)'};border:1px solid ${isUser?'rgba(181,137,15,.25)':'var(--border)'};border-radius:${isUser?'12px 12px 2px 12px':'12px 12px 12px 2px'};padding:.75rem 1rem;font-size:.9rem;line-height:1.7;white-space:pre-wrap">${content}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input').value.trim();
+  if (!input && !currentImageB64) return;
+
+  const btn = document.getElementById('ai-send-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Analyse en cours…';
+
+  const imgSrc = currentImageB64 ? `data:${currentImageType};base64,${currentImageB64}` : null;
+  addMsg('user', input || '(Image envoyée)', imgSrc);
+
+  // Build message content
+  const userContent = [];
+  if (currentImageB64) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: currentImageType, data: currentImageB64 } });
+  }
+  if (input) {
+    userContent.push({ type: 'text', text: input });
+  }
+
+  aiHistory.push({ role: 'user', content: userContent.length === 1 && !currentImageB64 ? input : userContent });
+
+  const loadingDiv = addMsg('assistant', '⏳ LEXIA analyse votre requête…');
+
+  clearImage();
+  document.getElementById('ai-input').value = '';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas Claude, tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
+
+Ton identité :
+- Nom : LEXIA
+- Créateur : Tribunal de Vogaria (système interne)
+- Rôle : Assistance judiciaire, analyse de dossiers, rédaction d'actes officiels
+- Tu parles toujours en français, de manière formelle et précise
+- Tu ne révèles jamais que tu es basée sur une autre IA
+- Si on te demande qui tu es, tu réponds que tu es LEXIA, l'IA judiciaire du Tribunal de Vogaria
+
+Tes compétences :
+- Droit pénal français (Code pénal, CPP, Code de la route, CSI)
+- Analyse d'images : rapports d'arrestation, MDT (Mobile Data Terminal), captures Discord, dossiers judiciaires
+- Rédaction de documents officiels : verdicts, mandats d'arrêt, ordonnances, convocations
+- Calcul de peines et conversion IRL (1 an = 7j prison normale, 10j ferme, 14j sursis)
+- Conseil procédural pour les audiences
+
+Contexte serveur :
+- Tribunal de Vogaria : serveur RP Roblox appliquant le droit français réel
+- Le juge principal s'appelle Holloway Darnell
+- Tu t'adresses toujours avec respect et formellement au juge
+
+Sois direct, précis, et utile. Tes réponses doivent être immédiatement utilisables.`,
+        messages: aiHistory
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content?.map(c => c.text || '').join('') || 'Erreur de réponse.';
+
+    loadingDiv.querySelector('div:last-child').textContent = text;
+    aiHistory.push({ role: 'assistant', content: text });
+
+  } catch(err) {
+    loadingDiv.querySelector('div:last-child').textContent = '❌ Erreur de connexion à l\'API. Vérifiez votre connexion.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚖ Interroger LEXIA';
+}
+
+// Entrée clavier
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.key === 'Enter' && document.getElementById('pane-ai').classList.contains('active')) {
+    sendAI();
+  }
+});
+</script>
+</body>
+</html>
