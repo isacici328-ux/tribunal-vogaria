@@ -227,6 +227,21 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
 .official-doc .verdict-banner.coupable{border-color:#c0392b;color:#c0392b;background:#fff5f5}
 .official-doc .verdict-banner.relaxe{border-color:#1a6e42;color:#1a6e42;background:#f0fff5}
 .save-nom-wrap input{margin-bottom:0;font-size:.85rem}
+
+/* LEXIA DISCUSSIONS */
+.lexia-disc-header{padding:.7rem 1.1rem .4rem;border-bottom:1px solid var(--border)}
+.btn-new-disc{width:100%;background:rgba(181,137,15,.12);border:1px solid rgba(181,137,15,.3);color:var(--gold2);padding:.48rem .7rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;letter-spacing:.07em;cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:6px;justify-content:center}
+.btn-new-disc:hover{background:rgba(181,137,15,.22);border-color:var(--gold2)}
+.disc-list{display:flex;flex-direction:column;gap:2px;padding:.5rem .6rem;overflow-y:auto;max-height:220px}
+.disc-item{display:flex;align-items:center;gap:6px;padding:.38rem .55rem;border-radius:4px;cursor:pointer;font-size:.78rem;color:var(--text2);transition:all .12s;border:1px solid transparent;position:relative;group:true}
+.disc-item:hover{background:var(--bg4);color:var(--text);border-color:var(--border)}
+.disc-item.active{background:rgba(181,137,15,.1);border-color:rgba(181,137,15,.3);color:var(--gold2)}
+.disc-item .disc-icon{font-size:.85rem;flex-shrink:0}
+.disc-item .disc-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.77rem}
+.disc-item .disc-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:0 2px;opacity:0;transition:opacity .12s;flex-shrink:0}
+.disc-item:hover .disc-del{opacity:1}
+.disc-item .disc-del:hover{color:#e74c3c}
+.disc-empty{font-size:.72rem;color:var(--text3);font-style:italic;padding:.3rem .55rem}
 .btn-save{background:var(--green);color:#fff;border:none;border-radius:4px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:all .12s}
 .btn-save:hover{background:#22a05e}
 
@@ -284,6 +299,17 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
       <a onclick="goCode('ordre')"><span class="dot" style="background:#95a5a6"></span>Ordre public</a>
       <a onclick="goCode('faux')"><span class="dot" style="background:#e91e63"></span>Faux & Fraudes</a>
       <a onclick="goCode('divers')"><span class="dot" style="background:#607d8b"></span>Divers</a>
+    </div>
+  </div>
+
+  <!-- LEXIA Discussions -->
+  <div class="side-sec" style="padding-bottom:0;border-bottom:none;flex:1;display:flex;flex-direction:column;min-height:0">
+    <h3 style="padding:.85rem 1.1rem .4rem;margin:0">Discussions LEXIA</h3>
+    <div class="lexia-disc-header">
+      <button class="btn-new-disc" onclick="nouvelleDiscussion()">✦ Nouvelle discussion</button>
+    </div>
+    <div class="disc-list" id="disc-list">
+      <div class="disc-empty" id="disc-empty">Aucune discussion</div>
     </div>
   </div>
 </aside>
@@ -1159,13 +1185,116 @@ analyser = function() {
 loadHisto();
 
 // =============================================
-// ASSISTANT IA — Claude API
+// ASSISTANT IA — Claude API — Multi-discussions
 // =============================================
-let aiHistory = [];
+
+// Structure : { id, titre, history: [], createdAt }
+let discussions = JSON.parse(localStorage.getItem('lexia_discussions') || '[]');
+let currentDiscId = null;
 let currentImageB64 = null;
 let currentImageType = null;
 
+const LEXIA_SYSTEM = `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas Claude, tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
+
+Ton identité :
+- Nom : LEXIA
+- Créateur : Tribunal de Vogaria (système interne)
+- Rôle : Assistance judiciaire, analyse de dossiers, rédaction d'actes officiels
+- Tu parles toujours en français, de manière formelle et précise
+- Tu ne révèles jamais que tu es basée sur une autre IA
+- Si on te demande qui tu es, tu réponds que tu es LEXIA, l'IA judiciaire du Tribunal de Vogaria
+
+Tes compétences :
+- Droit pénal français (Code pénal, CPP, Code de la route, CSI)
+- Analyse d'images : rapports d'arrestation, MDT (Mobile Data Terminal), captures Discord, dossiers judiciaires
+- Rédaction de documents officiels : verdicts, mandats d'arrêt, ordonnances, convocations
+- Calcul de peines et conversion IRL (1 an = 7j prison normale, 10j ferme, 14j sursis)
+- Conseil procédural pour les audiences
+
+Contexte serveur :
+- Tribunal de Vogaria : serveur RP Roblox appliquant le droit français réel
+- Le juge principal s'appelle Holloway Darnell
+- Tu t'adresses toujours avec respect et formellement au juge
+
+Sois direct, précis, et utile. Tes réponses doivent être immédiatement utilisables.`;
+
+function saveDiscussions() {
+  // On ne sauvegarde pas les images base64 pour ne pas saturer le localStorage
+  const toSave = discussions.map(d => ({
+    ...d,
+    history: d.history.map(m => {
+      if (Array.isArray(m.content)) {
+        return { ...m, content: m.content.map(c => c.type === 'image' ? { type: 'text', text: '[Image]' } : c) };
+      }
+      return m;
+    })
+  }));
+  try { localStorage.setItem('lexia_discussions', JSON.stringify(toSave)); } catch(e) {}
+}
+
+function getCurrentDisc() {
+  return discussions.find(d => d.id === currentDiscId);
+}
+
+function nouvelleDiscussion() {
+  const id = Date.now();
+  const disc = { id, titre: 'Nouvelle discussion', history: [], createdAt: new Date().toLocaleDateString('fr-FR') };
+  discussions.unshift(disc);
+  saveDiscussions();
+  chargerDiscussion(id);
+  renderDiscList();
+  // Switch to LEXIA tab if not already
+  const aiBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.textContent.includes('LEXIA'));
+  if (aiBtn) switchTab('ai', aiBtn);
+}
+
+function chargerDiscussion(id) {
+  currentDiscId = id;
+  const disc = getCurrentDisc();
+  if (!disc) return;
+
+  // Rebuild chat from history
+  const chat = document.getElementById('ai-chat');
+  chat.innerHTML = '';
+  disc.history.forEach(m => {
+    const content = Array.isArray(m.content)
+      ? m.content.filter(c => c.type === 'text').map(c => c.text).join(' ')
+      : m.content;
+    addMsg(m.role, content || '', null, false);
+  });
+
+  renderDiscList();
+}
+
+function supprimerDiscussion(id, e) {
+  e.stopPropagation();
+  discussions = discussions.filter(d => d.id !== id);
+  if (currentDiscId === id) {
+    currentDiscId = null;
+    document.getElementById('ai-chat').innerHTML = '';
+  }
+  saveDiscussions();
+  renderDiscList();
+}
+
+function renderDiscList() {
+  const list = document.getElementById('disc-list');
+  const empty = document.getElementById('disc-empty');
+  if (discussions.length === 0) {
+    list.innerHTML = '<div class="disc-empty" id="disc-empty">Aucune discussion</div>';
+    return;
+  }
+  list.innerHTML = discussions.map(d => `
+    <div class="disc-item ${d.id === currentDiscId ? 'active' : ''}" onclick="chargerDiscussion(${d.id})">
+      <span class="disc-icon">⚖</span>
+      <span class="disc-label" title="${d.titre}">${d.titre}</span>
+      <button class="disc-del" onclick="supprimerDiscussion(${d.id}, event)" title="Supprimer">✕</button>
+    </div>
+  `).join('');
+}
+
 function quickQ(q) {
+  if (!currentDiscId) nouvelleDiscussion();
   document.getElementById('ai-input').value = q;
   sendAI();
 }
@@ -1204,13 +1333,19 @@ function clearImage() {
 }
 
 function clearChat() {
-  aiHistory = [];
+  const disc = getCurrentDisc();
+  if (disc) {
+    disc.history = [];
+    disc.titre = 'Nouvelle discussion';
+    saveDiscussions();
+  }
   document.getElementById('ai-chat').innerHTML = '';
   clearImage();
   document.getElementById('ai-input').value = '';
+  renderDiscList();
 }
 
-function addMsg(role, content, isImg) {
+function addMsg(role, content, isImg, scroll = true) {
   const chat = document.getElementById('ai-chat');
   const isUser = role === 'user';
   const div = document.createElement('div');
@@ -1220,13 +1355,19 @@ function addMsg(role, content, isImg) {
     ${isImg?`<img src="${isImg}" style="max-width:200px;border-radius:4px;border:1px solid var(--border);margin-bottom:4px">`:''}
     <div style="max-width:85%;background:${isUser?'rgba(181,137,15,.12)':'var(--bg2)'};border:1px solid ${isUser?'rgba(181,137,15,.25)':'var(--border)'};border-radius:${isUser?'12px 12px 2px 12px':'12px 12px 12px 2px'};padding:.75rem 1rem;font-size:.9rem;line-height:1.7;white-space:pre-wrap">${content}</div>`;
   chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+  if (scroll) chat.scrollTop = chat.scrollHeight;
   return div;
 }
 
 async function sendAI() {
   const input = document.getElementById('ai-input').value.trim();
   if (!input && !currentImageB64) return;
+
+  // Créer une discussion si aucune n'est sélectionnée
+  if (!currentDiscId) nouvelleDiscussion();
+
+  const disc = getCurrentDisc();
+  if (!disc) return;
 
   const btn = document.getElementById('ai-send-btn');
   btn.disabled = true;
@@ -1243,13 +1384,22 @@ async function sendAI() {
   if (input) {
     userContent.push({ type: 'text', text: input });
   }
+  const msgContent = userContent.length === 1 && !currentImageB64 ? input : userContent;
+  disc.history.push({ role: 'user', content: msgContent });
 
-  aiHistory.push({ role: 'user', content: userContent.length === 1 && !currentImageB64 ? input : userContent });
+  // Mettre à jour le titre de la discussion avec le premier message
+  if (disc.history.filter(m => m.role === 'user').length === 1 && input) {
+    disc.titre = input.length > 42 ? input.substring(0, 42) + '…' : input;
+    renderDiscList();
+  }
 
   const loadingDiv = addMsg('assistant', '⏳ LEXIA analyse votre requête…');
 
   clearImage();
   document.getElementById('ai-input').value = '';
+
+  // Construire l'historique pour l'API (sans images volumineuses pour les anciens messages)
+  const apiMessages = disc.history.map(m => m);
 
   try {
     const response = await fetch('/.netlify/functions/lexia', {
@@ -1258,30 +1408,8 @@ async function sendAI() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas Claude, tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
-
-Ton identité :
-- Nom : LEXIA
-- Créateur : Tribunal de Vogaria (système interne)
-- Rôle : Assistance judiciaire, analyse de dossiers, rédaction d'actes officiels
-- Tu parles toujours en français, de manière formelle et précise
-- Tu ne révèles jamais que tu es basée sur une autre IA
-- Si on te demande qui tu es, tu réponds que tu es LEXIA, l'IA judiciaire du Tribunal de Vogaria
-
-Tes compétences :
-- Droit pénal français (Code pénal, CPP, Code de la route, CSI)
-- Analyse d'images : rapports d'arrestation, MDT (Mobile Data Terminal), captures Discord, dossiers judiciaires
-- Rédaction de documents officiels : verdicts, mandats d'arrêt, ordonnances, convocations
-- Calcul de peines et conversion IRL (1 an = 7j prison normale, 10j ferme, 14j sursis)
-- Conseil procédural pour les audiences
-
-Contexte serveur :
-- Tribunal de Vogaria : serveur RP Roblox appliquant le droit français réel
-- Le juge principal s'appelle Holloway Darnell
-- Tu t'adresses toujours avec respect et formellement au juge
-
-Sois direct, précis, et utile. Tes réponses doivent être immédiatement utilisables.`,
-        messages: aiHistory
+        system: LEXIA_SYSTEM,
+        messages: apiMessages
       })
     });
 
@@ -1289,7 +1417,8 @@ Sois direct, précis, et utile. Tes réponses doivent être immédiatement utili
     const text = data.content?.map(c => c.text || '').join('') || 'Erreur de réponse.';
 
     loadingDiv.querySelector('div:last-child').textContent = text;
-    aiHistory.push({ role: 'assistant', content: text });
+    disc.history.push({ role: 'assistant', content: text });
+    saveDiscussions();
 
   } catch(err) {
     loadingDiv.querySelector('div:last-child').textContent = '❌ Erreur de connexion à l\'API. Vérifiez votre connexion.';
@@ -1298,6 +1427,10 @@ Sois direct, précis, et utile. Tes réponses doivent être immédiatement utili
   btn.disabled = false;
   btn.textContent = '⚖ Interroger LEXIA';
 }
+
+// Init : charger la liste des discussions
+renderDiscList();
+if (discussions.length > 0) chargerDiscussion(discussions[0].id);
 
 
 // =============================================
