@@ -182,6 +182,50 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
 .btn-clear-all{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.2);color:#e74c3c;padding:.4rem .85rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer}
 .btn-export-all{background:rgba(181,137,15,.1);border:1px solid rgba(181,137,15,.25);color:var(--gold2);padding:.4rem .85rem;border-radius:4px;font-family:var(--mono);font-size:.72rem;cursor:pointer}
 .save-nom-wrap{display:flex;gap:.5rem;margin-top:.5rem;margin-bottom:.5rem}
+
+/* PNG EXPORT */
+.btn-png{background:linear-gradient(135deg,rgba(181,137,15,.2),rgba(181,137,15,.08));border:1px solid rgba(181,137,15,.4);color:var(--gold2);padding:.45rem 1rem;border-radius:4px;font-family:var(--mono);font-size:.75rem;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-png:hover{background:rgba(181,137,15,.25);border-color:var(--gold2);color:var(--gold3)}
+.doc-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.doc-type-btn{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.85rem .9rem;cursor:pointer;text-align:left;transition:all .15s;color:var(--text2)}
+.doc-type-btn:hover{border-color:rgba(181,137,15,.4);color:var(--text);background:var(--bg4)}
+.doc-type-btn.selected{border-color:var(--gold);background:rgba(181,137,15,.08);color:var(--text)}
+.doc-type-btn .dticon{font-size:1.4rem;display:block;margin-bottom:.3rem}
+.doc-type-btn .dtlabel{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;display:block}
+.doc-type-btn .dtdesc{font-size:.78rem;color:var(--text3);margin-top:.2rem;display:block;font-style:italic}
+.doc-field{margin-bottom:.75rem}
+.doc-field label{font-size:.75rem;color:var(--text2);font-style:italic;display:block;margin-bottom:.3rem;font-family:var(--mono);letter-spacing:.05em}
+.doc-field input,.doc-field textarea,.doc-field select{margin-bottom:0}
+.png-preview-wrap{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1rem;text-align:center;margin-top:1rem}
+.png-preview-wrap canvas{max-width:100%;border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#png-render-area{position:fixed;left:-9999px;top:-9999px;z-index:-1}
+.doc-preview-hint{font-size:.72rem;color:var(--text3);font-family:var(--mono);margin-top:.6rem;text-align:center}
+.official-doc{background:#faf9f6;color:#1a1a1a;font-family:'Times New Roman',Times,serif;width:794px;min-height:1050px;padding:60px 70px;box-sizing:border-box;position:relative;line-height:1.6}
+.official-doc .doc-watermark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:80px;color:rgba(181,137,15,.06);font-family:'Times New Roman',serif;white-space:nowrap;pointer-events:none;letter-spacing:10px;text-transform:uppercase}
+.official-doc .doc-header{text-align:center;border-bottom:3px double #1a1a1a;padding-bottom:20px;margin-bottom:24px}
+.official-doc .doc-republic{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:8px}
+.official-doc .doc-tribunal{font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.official-doc .doc-subtitle{font-size:13px;letter-spacing:1px;color:#333;text-transform:uppercase}
+.official-doc .doc-seals{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
+.official-doc .doc-seal{width:64px;height:64px;border-radius:50%;border:2px solid #b5890f;display:flex;align-items:center;justify-content:center;font-size:28px;color:#b5890f}
+.official-doc .doc-title-block{text-align:center;margin:24px 0;padding:16px;border:2px solid #1a1a1a}
+.official-doc .doc-title-block h2{font-size:20px;font-weight:700;letter-spacing:4px;text-transform:uppercase;margin:0 0 4px}
+.official-doc .doc-title-block .doc-num{font-size:11px;color:#555;letter-spacing:2px;font-style:italic}
+.official-doc .doc-section{margin-bottom:16px}
+.official-doc .doc-section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#666;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:8px;font-family:'Times New Roman',serif}
+.official-doc .doc-section-content{font-size:13px;line-height:1.8;text-align:justify}
+.official-doc .doc-highlight{background:#fffde7;border-left:4px solid #b5890f;padding:10px 14px;margin:8px 0;font-size:14px;font-weight:700}
+.official-doc .doc-footer{position:absolute;bottom:50px;left:70px;right:70px;border-top:1px solid #999;padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end}
+.official-doc .doc-sig-block{text-align:center}
+.official-doc .doc-sig-block .sig-role{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:6px}
+.official-doc .doc-sig-block .sig-name{font-size:13px;font-weight:700;border-top:1px solid #333;padding-top:4px;margin-top:24px;min-width:160px}
+.official-doc .doc-corner-stamp{width:90px;height:90px;border:2px solid #b5890f;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#b5890f;font-size:8px;letter-spacing:1px;text-transform:uppercase;text-align:center;line-height:1.4}
+.official-doc table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px}
+.official-doc table td{padding:6px 8px;border:1px solid #ccc}
+.official-doc table td:first-child{font-weight:700;background:#f5f5f0;width:35%}
+.official-doc .verdict-banner{text-align:center;padding:14px;margin:16px 0;font-size:24px;font-weight:700;letter-spacing:4px;text-transform:uppercase;border:3px solid}
+.official-doc .verdict-banner.coupable{border-color:#c0392b;color:#c0392b;background:#fff5f5}
+.official-doc .verdict-banner.relaxe{border-color:#1a6e42;color:#1a6e42;background:#f0fff5}
 .save-nom-wrap input{margin-bottom:0;font-size:.85rem}
 .btn-save{background:var(--green);color:#fff;border:none;border-radius:4px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:all .12s}
 .btn-save:hover{background:#22a05e}
@@ -250,6 +294,7 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
     <button class="tab-btn" onclick="switchTab('codes',this)">Infractions &amp; Amendes</button>
     <button class="tab-btn" onclick="switchTab('histo',this)" id="tab-histo-btn">Historique <span id="histo-count" style="font-size:.65rem;opacity:.6"></span></button>
     <button class="tab-btn" onclick="switchTab('ai',this)">⚖ LEXIA</button>
+    <button class="tab-btn" onclick="switchTab('png',this)">📄 Documents PNG</button>
   </div>
 
   <!-- FORMULAIRE -->
@@ -429,6 +474,60 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
     <!-- Chat history -->
     <div id="ai-chat" style="display:flex;flex-direction:column;gap:.75rem"></div>
   </div>
+
+  <!-- PNG DOCUMENTS PANE -->
+  <div class="pane" id="pane-png">
+    <div class="fsec">
+      <div class="fsec-title">Type de document</div>
+      <div class="doc-type-grid">
+        <div class="doc-type-btn selected" onclick="selectDocType(this,'verdict')" data-type="verdict">
+          <span class="dticon">&#9878;</span>
+          <span class="dtlabel">Jugement &amp; Verdict</span>
+          <span class="dtdesc">Décision officielle du tribunal</span>
+        </div>
+        <div class="doc-type-btn" onclick="selectDocType(this,'mandat_depot')" data-type="mandat_depot">
+          <span class="dticon">&#128274;</span>
+          <span class="dtlabel">Mandat de dépôt</span>
+          <span class="dtdesc">Détention provisoire</span>
+        </div>
+        <div class="doc-type-btn" onclick="selectDocType(this,'mandat_arret')" data-type="mandat_arret">
+          <span class="dticon">&#128680;</span>
+          <span class="dtlabel">Mandat d'arrêt</span>
+          <span class="dtdesc">Ordre d'arrestation</span>
+        </div>
+        <div class="doc-type-btn" onclick="selectDocType(this,'convocation')" data-type="convocation">
+          <span class="dticon">&#128203;</span>
+          <span class="dtlabel">Convocation</span>
+          <span class="dtdesc">Convocation à l'audience</span>
+        </div>
+        <div class="doc-type-btn" onclick="selectDocType(this,'ordonnance')" data-type="ordonnance">
+          <span class="dticon">&#128220;</span>
+          <span class="dtlabel">Ordonnance</span>
+          <span class="dtdesc">Ordonnance judiciaire</span>
+        </div>
+        <div class="doc-type-btn" onclick="selectDocType(this,'liberatoire')" data-type="liberatoire">
+          <span class="dticon">&#128994;</span>
+          <span class="dtlabel">Titre libératoire</span>
+          <span class="dtdesc">Remise en liberté</span>
+        </div>
+      </div>
+    </div>
+    <div class="fsec">
+      <div class="fsec-title">Informations du document</div>
+      <div id="png-fields"></div>
+      <button class="btn-verdict" onclick="genererDocPNG()" style="margin-top:.5rem">Generer le document PNG</button>
+    </div>
+    <div class="png-preview-wrap" id="png-preview-wrap" style="display:none">
+      <div style="font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);margin-bottom:.85rem">Apercu du document officiel</div>
+      <canvas id="png-canvas"></canvas>
+      <div class="doc-preview-hint">Document genere en haute qualite (794 x 1122 px - A4)</div>
+      <div style="margin-top:1rem;display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn-png" onclick="telechargerPNG()">Telecharger en PNG</button>
+        <button class="btn-sm" onclick="document.getElementById('png-preview-wrap').style.display='none'">Fermer</button>
+      </div>
+    </div>
+  </div>
+  <div id="png-render-area" style="position:fixed;left:-9999px;top:-9999px;z-index:-1;pointer-events:none;width:794px"></div>
 
   <footer>TRIBUNAL DE VOGARIA — DROIT FRANÇAIS — SERVEUR RP ERLC — OUTIL DU JUGE</footer>
 </main>
@@ -1199,6 +1298,366 @@ Sois direct, précis, et utile. Tes réponses doivent être immédiatement utili
   btn.disabled = false;
   btn.textContent = '⚖ Interroger LEXIA';
 }
+
+
+// =============================================
+// PNG DOCUMENTS — Génération officielle
+// =============================================
+
+let currentDocType = 'verdict';
+let currentDocData = {};
+let lastPNGCanvas = null;
+
+const docTypes = {
+  verdict: {
+    label: 'JUGEMENT CORRECTIONNEL',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'prevenu_nom', label:'Nom & Prénom du prévenu', placeholder:'Jean Dupont'},
+      {id:'prevenu_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'infractions', label:'Infractions retenues', placeholder:'Tentative de meurtre · Délit de fuite', type:'textarea'},
+      {id:'verdict_type', label:'Verdict', type:'select', options:['COUPABLE','RELAXE']},
+      {id:'peine', label:'Peine prononcée', placeholder:'5 ans d\'emprisonnement (35 jours IRL)'},
+      {id:'amende', label:'Amende', placeholder:'3 750 €'},
+      {id:'contexte', label:'Motivations du jugement', placeholder:'Compte tenu des preuves retenues...', type:'textarea'},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_audience', label:'Date d\'audience', placeholder:'18/05/2026'},
+    ]
+  },
+  mandat_depot: {
+    label: 'MANDAT DE DÉPÔT',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'prevenu_nom', label:'Nom & Prénom du détenu', placeholder:'Jean Dupont'},
+      {id:'prevenu_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'date_arrestation', label:'Date & heure d\'arrestation', placeholder:'18/05/2026 à 19h43'},
+      {id:'infractions', label:'Chefs d\'accusation', placeholder:'Tentative de meurtre · Délit de fuite', type:'textarea'},
+      {id:'motif', label:'Motif de détention', placeholder:'Risque de fuite — Trouble à l\'ordre public', type:'textarea'},
+      {id:'duree', label:'Durée de détention', placeholder:'48 heures'},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_mandat', label:'Date & heure du mandat', placeholder:'18/05/2026 à 20h10'},
+    ]
+  },
+  mandat_arret: {
+    label: 'MANDAT D\'ARRÊT',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'suspect_nom', label:'Nom & Prénom du suspect', placeholder:'Jean Dupont'},
+      {id:'suspect_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'description', label:'Description physique', placeholder:'Grand, cheveux noirs, tenue sombre'},
+      {id:'infractions', label:'Motifs de l\'arrestation', placeholder:'Meurtre (Art. 221-1 CP)', type:'textarea'},
+      {id:'dangers', label:'Niveau de dangerosité', type:'select', options:['FAIBLE','MODÉRÉ','ÉLEVÉ','EXTRÊME']},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_mandat', label:'Date du mandat', placeholder:'18/05/2026'},
+    ]
+  },
+  convocation: {
+    label: 'CONVOCATION À L\'AUDIENCE',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'convoque_nom', label:'Nom & Prénom du convoqué', placeholder:'Jean Dupont'},
+      {id:'convoque_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'qualite', label:'Qualité', type:'select', options:['Prévenu','Témoin','Partie civile','Expert']},
+      {id:'date_audience', label:'Date & heure de l\'audience', placeholder:'20/05/2026 à 14h00'},
+      {id:'lieu', label:'Lieu', placeholder:'Salle d\'audience principale — Tribunal de Vogaria'},
+      {id:'objet', label:'Objet de la convocation', placeholder:'Audience correctionnelle', type:'textarea'},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_convoc', label:'Date de délivrance', placeholder:'18/05/2026'},
+    ]
+  },
+  ordonnance: {
+    label: 'ORDONNANCE JUDICIAIRE',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'objet', label:'Objet de l\'ordonnance', placeholder:'Ordonnance de mise en liberté provisoire'},
+      {id:'prevenu_nom', label:'Concernant (nom)', placeholder:'Jean Dupont'},
+      {id:'prevenu_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'dispositif', label:'Dispositif — Ordre donné', placeholder:'Il est ordonné que...', type:'textarea'},
+      {id:'motifs', label:'Motifs juridiques', placeholder:'Vu le Code pénal art. 137-1...', type:'textarea'},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_ordo', label:'Date de l\'ordonnance', placeholder:'18/05/2026'},
+    ]
+  },
+  liberatoire: {
+    label: 'TITRE LIBÉRATOIRE',
+    fields: [
+      {id:'num_affaire', label:'Numéro d\'affaire', placeholder:'2026-05-XX-001'},
+      {id:'prevenu_nom', label:'Nom & Prénom du libéré', placeholder:'Jean Dupont'},
+      {id:'prevenu_pseudo', label:'Pseudonyme serveur', placeholder:'player_xxx'},
+      {id:'date_incarceration', label:'Date d\'incarcération', placeholder:'18/05/2026'},
+      {id:'date_liberation', label:'Date & heure de libération', placeholder:'20/05/2026 à 08h00'},
+      {id:'motif_lib', label:'Motif de libération', type:'select', options:['Fin de peine','Relaxe','Liberté provisoire','Erreur judiciaire','Grâce']},
+      {id:'conditions', label:'Conditions éventuelles', placeholder:'Sans conditions particulières', type:'textarea'},
+      {id:'juge', label:'Nom du juge', placeholder:'Holloway Darnell'},
+      {id:'date_titre', label:'Date du titre', placeholder:'20/05/2026'},
+    ]
+  }
+};
+
+function selectDocType(el, type) {
+  document.querySelectorAll('.doc-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  currentDocType = type;
+  renderPNGFields();
+  document.getElementById('png-preview-wrap').style.display = 'none';
+}
+
+function renderPNGFields() {
+  const def = docTypes[currentDocType];
+  const container = document.getElementById('png-fields');
+  container.innerHTML = def.fields.map(f => {
+    if (f.type === 'textarea') return `<div class="doc-field"><label>${f.label}</label><textarea id="pf_${f.id}" placeholder="${f.placeholder||''}"></textarea></div>`;
+    if (f.type === 'select') return `<div class="doc-field"><label>${f.label}</label><select id="pf_${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    return `<div class="doc-field"><label>${f.label}</label><input type="text" id="pf_${f.id}" placeholder="${f.placeholder||''}"></div>`;
+  }).join('');
+}
+
+function getPNGFields() {
+  const def = docTypes[currentDocType];
+  const data = {};
+  def.fields.forEach(f => {
+    const el = document.getElementById('pf_' + f.id);
+    data[f.id] = el ? el.value.trim() : '';
+  });
+  return data;
+}
+
+function genererDocPNG() {
+  const data = getPNGFields();
+  const html = buildDocHTML(currentDocType, data);
+  
+  const renderArea = document.getElementById('png-render-area');
+  renderArea.innerHTML = html;
+  
+  const docEl = renderArea.querySelector('.official-doc');
+  
+  setTimeout(() => {
+    renderDocToCanvas(docEl, data);
+  }, 150);
+}
+
+function buildDocHTML(type, d) {
+  const today = d.date_mandat || d.date_audience || d.date_convoc || d.date_ordo || d.date_titre || new Date().toLocaleDateString('fr-FR');
+  const affaire = d.num_affaire || 'N/A';
+  const juge = d.juge || 'Holloway Darnell';
+  const nom = d.prevenu_nom || d.suspect_nom || d.convoque_nom || '—';
+  const pseudo = d.prevenu_pseudo || d.suspect_pseudo || d.convoque_pseudo || '—';
+
+  const header = `
+    <div class="doc-header">
+      <div class="doc-seals">
+        <div class="doc-seal">⚖</div>
+        <div>
+          <div class="doc-republic">REPUBLIQUE FRANCAISE</div>
+          <div class="doc-tribunal">TRIBUNAL DE VOGARIA</div>
+          <div class="doc-subtitle">Juridiction de droit commun — Serveur RP</div>
+        </div>
+        <div class="doc-seal">🏛</div>
+      </div>
+    </div>`;
+
+  let body = '';
+
+  if (type === 'verdict') {
+    const isCoupable = (d.verdict_type || 'COUPABLE') === 'COUPABLE';
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire}</div>
+      </div>
+      <div class="verdict-banner ${isCoupable?'coupable':'relaxe'}">${isCoupable?'COUPABLE':'RELAXE'}</div>
+      <table><tr><td>Prévenu</td><td>${nom}</td></tr><tr><td>Pseudonyme</td><td>${pseudo}</td></tr><tr><td>Date d'audience</td><td>${d.date_audience||today}</td></tr></table>
+      <div class="doc-section"><div class="doc-section-label">Infractions retenues</div><div class="doc-section-content">${(d.infractions||'—').replace(/·/g,'<br>·')}</div></div>
+      ${isCoupable?`<div class="doc-section"><div class="doc-section-label">Peine prononcée</div><div class="doc-highlight">${d.peine||'—'}</div></div>
+      <table><tr><td>Amende</td><td>${d.amende||'—'}</td></tr></table>`:'<div class="doc-section"><div class="doc-section-label">Décision</div><div class="doc-section-content">Le tribunal, faute de preuves suffisantes, prononce la relaxe du prévenu. Remise en liberté immédiate ordonnée.</div></div>'}
+      <div class="doc-section"><div class="doc-section-label">Motivations</div><div class="doc-section-content">${d.contexte||'—'}</div></div>`;
+  } else if (type === 'mandat_depot') {
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire}</div>
+      </div>
+      <table>
+        <tr><td>Nom &amp; Prénom</td><td>${nom}</td></tr>
+        <tr><td>Pseudonyme</td><td>${pseudo}</td></tr>
+        <tr><td>Date d'arrestation</td><td>${d.date_arrestation||today}</td></tr>
+        <tr><td>Durée de détention</td><td><strong>${d.duree||'24 heures'}</strong></td></tr>
+      </table>
+      <div class="doc-section"><div class="doc-section-label">Chefs d'accusation</div><div class="doc-section-content">${(d.infractions||'—').replace(/·/g,'<br>·')}</div></div>
+      <div class="doc-section"><div class="doc-section-label">Motif de la détention provisoire</div><div class="doc-section-content">${d.motif||'Les faits reprochés présentent un risque pour la sécurité publique. La détention provisoire est nécessaire.'}</div></div>
+      <div class="doc-highlight">Je, ${juge}, Juge du Tribunal de Vogaria, ordonne que ${nom} soit maintenu(e) en détention provisoire dans les locaux de la prison de Vogaria pour une durée de ${d.duree||'24 heures'}.</div>`;
+  } else if (type === 'mandat_arret') {
+    const danger = d.dangers || 'MODÉRÉ';
+    const dangerColor = {FAIBLE:'#27ae60',MODÉRÉ:'#e67e22','ÉLEVÉ':'#e74c3c',EXTRÊME:'#8e1a1a'}[danger]||'#e67e22';
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire}</div>
+      </div>
+      <div style="text-align:center;margin:12px 0;padding:8px;border:2px solid ${dangerColor};color:${dangerColor};font-weight:700;font-size:14px;letter-spacing:3px">NIVEAU DE DANGER : ${danger}</div>
+      <table>
+        <tr><td>Suspect</td><td><strong>${nom}</strong></td></tr>
+        <tr><td>Pseudonyme</td><td>${pseudo}</td></tr>
+        <tr><td>Description</td><td>${d.description||'—'}</td></tr>
+        <tr><td>Date du mandat</td><td>${d.date_mandat||today}</td></tr>
+      </table>
+      <div class="doc-section"><div class="doc-section-label">Motifs de l'arrestation</div><div class="doc-section-content">${(d.infractions||'—').replace(/·/g,'<br>·')}</div></div>
+      <div class="doc-highlight">Je, ${juge}, ordonne l'arrestation immédiate de ${nom} et sa présentation devant le Tribunal de Vogaria dans les meilleurs délais.</div>`;
+  } else if (type === 'convocation') {
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire}</div>
+      </div>
+      <table>
+        <tr><td>Convoqué(e)</td><td><strong>${nom}</strong></td></tr>
+        <tr><td>Pseudonyme</td><td>${pseudo}</td></tr>
+        <tr><td>Qualité</td><td>${d.qualite||'Prévenu'}</td></tr>
+        <tr><td>Date &amp; Heure</td><td><strong>${d.date_audience||today}</strong></td></tr>
+        <tr><td>Lieu</td><td>${d.lieu||'Salle d\'audience — Tribunal de Vogaria'}</td></tr>
+      </table>
+      <div class="doc-section"><div class="doc-section-label">Objet</div><div class="doc-section-content">${d.objet||'—'}</div></div>
+      <div class="doc-highlight">Votre présence est obligatoire. Tout défaut de comparution pourra entraîner une peine pour non-comparution devant la justice (Art. 121-2 CP).</div>`;
+  } else if (type === 'ordonnance') {
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire} — ${d.date_ordo||today}</div>
+      </div>
+      <table>
+        <tr><td>Objet</td><td><strong>${d.objet||'—'}</strong></td></tr>
+        <tr><td>Concernant</td><td>${nom}</td></tr>
+        <tr><td>Pseudonyme</td><td>${pseudo}</td></tr>
+      </table>
+      <div class="doc-section"><div class="doc-section-label">Motifs juridiques</div><div class="doc-section-content">${d.motifs||'—'}</div></div>
+      <div class="doc-section"><div class="doc-section-label">Dispositif</div><div class="doc-highlight">${d.dispositif||'—'}</div></div>`;
+  } else if (type === 'liberatoire') {
+    body = `
+      <div class="doc-title-block">
+        <h2>${docTypes[type].label}</h2>
+        <div class="doc-num">Affaire N° ${affaire}</div>
+      </div>
+      <div class="verdict-banner relaxe">LIBERE(E)</div>
+      <table>
+        <tr><td>Libéré(e)</td><td><strong>${nom}</strong></td></tr>
+        <tr><td>Pseudonyme</td><td>${pseudo}</td></tr>
+        <tr><td>Date d'incarcération</td><td>${d.date_incarceration||'—'}</td></tr>
+        <tr><td>Date de libération</td><td><strong>${d.date_liberation||today}</strong></td></tr>
+        <tr><td>Motif</td><td>${d.motif_lib||'Fin de peine'}</td></tr>
+      </table>
+      <div class="doc-section"><div class="doc-section-label">Conditions</div><div class="doc-section-content">${d.conditions||'Sans conditions particulières.'}</div></div>
+      <div class="doc-highlight">Le présent titre libératoire certifie que la personne susmentionnée est remise en liberté immédiate par décision du Tribunal de Vogaria.</div>`;
+  }
+
+  const footer = `
+    <div class="doc-footer">
+      <div class="doc-sig-block">
+        <div class="sig-role">Le Juge du Tribunal de Vogaria</div>
+        <div class="sig-name">${juge}</div>
+      </div>
+      <div class="doc-corner-stamp">
+        <span style="font-size:20px;margin-bottom:2px">⚖</span>
+        <span>Tribunal</span>
+        <span>de Vogaria</span>
+        <span style="margin-top:2px">${today}</span>
+      </div>
+      <div class="doc-sig-block">
+        <div class="sig-role">Greffier du Tribunal</div>
+        <div class="sig-name" style="color:#aaa;font-style:italic">Signature électronique</div>
+      </div>
+    </div>`;
+
+  return `<div class="official-doc">
+    <div class="doc-watermark">TRIBUNAL DE VOGARIA</div>
+    ${header}${body}${footer}
+  </div>`;
+}
+
+function renderDocToCanvas(docEl, data) {
+  if (!docEl) { alert('Erreur: élément non trouvé'); return; }
+
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  script.onload = () => {
+    html2canvas(docEl, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#faf9f6',
+      width: 794,
+      windowWidth: 794,
+      logging: false
+    }).then(canvas => {
+      lastPNGCanvas = canvas;
+      const preview = document.getElementById('png-canvas');
+      preview.width = canvas.width;
+      preview.height = canvas.height;
+      preview.style.maxWidth = '100%';
+      const ctx = preview.getContext('2d');
+      ctx.drawImage(canvas, 0, 0);
+      const wrap = document.getElementById('png-preview-wrap');
+      wrap.style.display = 'block';
+      wrap.scrollIntoView({behavior:'smooth'});
+    }).catch(err => {
+      console.error(err);
+      alert('Erreur lors de la génération: ' + err.message);
+    });
+  };
+  script.onerror = () => alert('Impossible de charger html2canvas. Vérifiez votre connexion internet.');
+  if (!window.html2canvas) {
+    document.head.appendChild(script);
+  } else {
+    script.onload();
+  }
+}
+
+function telechargerPNG() {
+  if (!lastPNGCanvas) return;
+  const nom = (document.getElementById('pf_prevenu_nom') || document.getElementById('pf_suspect_nom') || document.getElementById('pf_convoque_nom'));
+  const nomVal = nom ? nom.value.replace(/[^a-z0-9]/gi,'_') : 'document';
+  const typeLabel = currentDocType;
+  const link = document.createElement('a');
+  link.download = `${typeLabel}_${nomVal}_vogaria.png`;
+  link.href = lastPNGCanvas.toDataURL('image/png');
+  link.click();
+}
+
+// Init PNG fields
+renderPNGFields();
+
+// Add PNG button to verdict
+(function() {
+  const patchVerdict = setInterval(() => {
+    const btnRow = document.querySelector('#verdict-wrap .btn-row');
+    if (btnRow && !btnRow.querySelector('.btn-png')) {
+      const btn = document.createElement('button');
+      btn.className = 'btn-png';
+      btn.innerHTML = '&#128248; Exporter en PNG';
+      btn.onclick = function() {
+        switchTab('png', document.querySelectorAll('.tab-btn')[4]);
+        setTimeout(() => {
+          const v = document.getElementById('vtitle')?.textContent || 'COUPABLE';
+          const inf = document.getElementById('vinf')?.textContent || '';
+          const peine = document.getElementById('peine-val')?.textContent || '';
+          const amende = document.getElementById('amende-val')?.textContent || '';
+          const phrase = document.getElementById('phrase-box')?.innerText || '';
+          const el = (id) => document.getElementById('pf_' + id);
+          if (el('verdict_type')) el('verdict_type').value = v;
+          if (el('infractions')) el('infractions').value = inf.replace(/ · /g, '\n');
+          if (el('peine')) el('peine').value = peine;
+          if (el('amende')) el('amende').value = amende;
+          if (el('contexte')) el('contexte').value = phrase;
+          if (el('juge')) el('juge').value = 'Holloway Darnell';
+          if (el('date_audience')) el('date_audience').value = new Date().toLocaleDateString('fr-FR');
+          if (el('num_affaire')) el('num_affaire').value = '2026-' + new Date().toLocaleDateString('fr-FR').replace(/\//g,'-') + '-001';
+        }, 100);
+      };
+      btnRow.appendChild(btn);
+      clearInterval(patchVerdict);
+    }
+  }, 500);
+})();
+
 
 // Entrée clavier
 document.addEventListener('keydown', (e) => {
