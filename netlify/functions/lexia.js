@@ -6,17 +6,19 @@ export async function handler(event) {
   try {
     const body = JSON.parse(event.body);
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'llama-3.3-70b-versatile',
         max_tokens: 1000,
-        system: `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas Claude, tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
+        messages: [
+          {
+            role: 'system',
+            content: `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
 
 Ton identité :
 - Nom : LEXIA
@@ -28,7 +30,7 @@ Ton identité :
 
 Tes compétences :
 - Droit pénal français (Code pénal, CPP, Code de la route, CSI)
-- Analyse d'images : rapports d'arrestation, MDT, captures Discord, dossiers judiciaires
+- Analyse de dossiers judiciaires, rapports d'arrestation, MDT
 - Rédaction de documents officiels : verdicts, mandats d'arrêt, ordonnances, convocations
 - Calcul de peines et conversion IRL (1 an = 7j prison normale, 10j ferme, 14j sursis)
 - Conseil procédural pour les audiences
@@ -38,12 +40,18 @@ Contexte serveur :
 - Le juge principal s'appelle Holloway Darnell
 - Tu t'adresses toujours avec respect et formellement au juge
 
-Sois direct, précis, et utile. Tes réponses doivent être immédiatement utilisables.`,
-        messages: body.messages
+Sois direct, précis, et utile.`
+          },
+          ...body.messages.map(m => ({
+            role: m.role,
+            content: typeof m.content === 'string' ? m.content : m.content.map(c => c.text || '').join(' ')
+          }))
+        ]
       })
     });
 
     const data = await response.json();
+    const text = data.choices?.[0]?.message?.content || 'Erreur de réponse.';
 
     return {
       statusCode: 200,
@@ -51,7 +59,7 @@ Sois direct, précis, et utile. Tes réponses doivent être immédiatement utili
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ content: [{ text }] })
     };
 
   } catch (err) {
