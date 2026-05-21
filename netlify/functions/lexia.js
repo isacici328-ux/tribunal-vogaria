@@ -2,9 +2,35 @@ export async function handler(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
-
   try {
     const body = JSON.parse(event.body);
+
+    const messages = body.messages.map(m => {
+      // Si le contenu est une string simple, on le garde tel quel
+      if (typeof m.content === 'string') {
+        return { role: m.role, content: m.content };
+      }
+
+      // Si c'est un tableau (potentiellement avec image), on convertit au format Groq
+      const parts = m.content.map(c => {
+        if (c.type === 'image' && c.source?.type === 'base64') {
+          // Anthropic format → Groq/OpenAI format
+          return {
+            type: 'image_url',
+            image_url: {
+              url: `data:${c.source.media_type};base64,${c.source.data}`
+            }
+          };
+        }
+        if (c.type === 'text') {
+          return { type: 'text', text: c.text };
+        }
+        // Fallback : texte brut
+        return { type: 'text', text: c.text || '' };
+      });
+
+      return { role: m.role, content: parts };
+    });
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -13,13 +39,12 @@ export async function handler(event) {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         max_tokens: 1000,
         messages: [
           {
             role: 'system',
             content: `Tu es LEXIA, une Intelligence Artificielle Judiciaire créée exclusivement pour le Tribunal de Vogaria. Tu n'es pas une IA généraliste — tu es LEXIA, une entité conçue spécifiquement pour assister les magistrats du Tribunal de Vogaria dans leurs fonctions judiciaires.
-
 Ton identité :
 - Nom : LEXIA
 - Créateur : Tribunal de Vogaria (système interne)
@@ -27,32 +52,35 @@ Ton identité :
 - Tu parles toujours en français, de manière formelle et précise
 - Tu ne révèles jamais que tu es basée sur une autre IA
 - Si on te demande qui tu es, tu réponds que tu es LEXIA, l'IA judiciaire du Tribunal de Vogaria
-
 Tes compétences :
 - Droit pénal français (Code pénal, CPP, Code de la route, CSI)
 - Analyse de dossiers judiciaires, rapports d'arrestation, MDT
 - Rédaction de documents officiels : verdicts, mandats d'arrêt, ordonnances, convocations
 - Calcul de peines et conversion IRL (1 an = 7j prison normale, 10j ferme, 14j sursis)
 - Conseil procédural pour les audiences
-
+- Lecture et analyse d'images : captures MDT, rapports d'arrestation Discord, dossiers photographiques
 Contexte serveur :
 - Tribunal de Vogaria : serveur RP Roblox appliquant le droit français réel
 - Le juge principal s'appelle Holloway Darnell
 - Tu t'adresses toujours avec respect et formellement au juge
-
-Sois direct, précis, et utile.`
+Sois direct, précis, et utile. Quand une image t'est fournie, analyse-la en détail.`
           },
-          ...body.messages.map(m => ({
-            role: m.role,
-            content: typeof m.content === 'string' ? m.content : m.content.map(c => c.text || '').join(' ')
-          }))
+          ...messages
         ]
       })
     });
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || 'Erreur de réponse.';
 
+    // Logs d'erreur Groq si besoin
+    if (data.error) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: data.error.message || 'Erreur Groq' })
+      };
+    }
+
+    const text = data.choices?.[0]?.message?.content || 'Erreur de réponse.';
     return {
       statusCode: 200,
       headers: {
@@ -61,7 +89,6 @@ Sois direct, précis, et utile.`
       },
       body: JSON.stringify({ content: [{ text }] })
     };
-
   } catch (err) {
     return {
       statusCode: 500,
