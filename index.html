@@ -245,12 +245,290 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
 .btn-save{background:var(--green);color:#fff;border:none;border-radius:4px;padding:.55rem 1.1rem;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:all .12s}
 .btn-save:hover{background:#22a05e}
 
+/* ========== MODE LEXIA FULLSCREEN ========== */
+body.lexia-mode aside { display: none; }
+body.lexia-mode .app { grid-template-columns: 1fr; }
+body.lexia-mode main { max-width: 100%; padding: 0; }
+body.lexia-mode .tabs { display: none; }
+body.lexia-mode footer { display: none; }
+
+/* LEXIA FULLSCREEN LAYOUT */
+#lexia-fullscreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  flex-direction: row;
+}
+body.lexia-mode #lexia-fullscreen { display: flex; }
+
+/* Sidebar gauche LEXIA (discussions) */
+#lexia-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+#lexia-sidebar .lx-logo {
+  padding: 1.2rem 1rem 1rem;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+#lexia-sidebar .lx-logo .lx-back {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text3);
+  border-radius: 4px;
+  padding: .3rem .55rem;
+  font-size: .75rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all .12s;
+  white-space: nowrap;
+}
+#lexia-sidebar .lx-logo .lx-back:hover { color: var(--text); border-color: var(--gold); }
+#lexia-sidebar .lx-logo .lx-title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gold2);
+  letter-spacing: .05em;
+}
+#lexia-sidebar .lx-new-btn {
+  margin: .75rem .85rem .5rem;
+  width: calc(100% - 1.7rem);
+  background: rgba(181,137,15,.12);
+  border: 1px solid rgba(181,137,15,.3);
+  color: var(--gold2);
+  padding: .5rem .7rem;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .07em;
+  cursor: pointer;
+  transition: all .13s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+#lexia-sidebar .lx-new-btn:hover { background: rgba(181,137,15,.22); border-color: var(--gold2); }
+#lexia-sidebar .lx-disc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: .4rem .55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Zone centrale LEXIA */
+#lexia-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header LEXIA */
+#lexia-topbar {
+  padding: .7rem 1.2rem;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  flex-shrink: 0;
+}
+#lexia-topbar .lx-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: .68rem;
+  color: #2ecc71;
+}
+#lexia-topbar .lx-disc-name {
+  flex: 1;
+  font-size: .82rem;
+  color: var(--text2);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Messages chat */
+#lexia-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Zone saisie */
+#lexia-input-area {
+  border-top: 1px solid var(--border2);
+  background: var(--bg2);
+  padding: .85rem 1.5rem 1rem;
+  flex-shrink: 0;
+}
+#lexia-input-area .lx-input-row {
+  max-width: 860px;
+  margin: 0 auto;
+}
+#lexia-input-area .lx-img-zone {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .5rem;
+}
+#lexia-input-area .lx-img-btn {
+  background: none;
+  border: 1px dashed var(--border2);
+  color: var(--text3);
+  border-radius: 4px;
+  padding: .35rem .65rem;
+  font-size: .78rem;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all .12s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+#lexia-input-area .lx-img-btn:hover { border-color: var(--gold); color: var(--gold2); }
+#lexia-input-area .lx-textarea-row {
+  display: flex;
+  gap: .6rem;
+  align-items: flex-end;
+}
+#lexia-input-area textarea {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: .95rem;
+  padding: .65rem .9rem;
+  outline: none;
+  resize: none;
+  min-height: 48px;
+  max-height: 180px;
+  transition: border-color .12s;
+  line-height: 1.5;
+  margin: 0;
+}
+#lexia-input-area textarea:focus { border-color: var(--gold); }
+#lexia-input-area .lx-send-btn {
+  background: var(--gold);
+  border: none;
+  color: #0c0c0d;
+  border-radius: 8px;
+  padding: .65rem 1.1rem;
+  font-family: var(--mono);
+  font-size: .78rem;
+  letter-spacing: .08em;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all .13s;
+  white-space: nowrap;
+  height: 48px;
+}
+#lexia-input-area .lx-send-btn:hover { background: var(--gold2); }
+#lexia-input-area .lx-send-btn:disabled { opacity: .5; cursor: not-allowed; }
+#lexia-input-area .lx-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: .55rem;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Image preview dans input */
+#lx-img-preview-wrap {
+  display: none;
+  position: relative;
+  margin-bottom: .5rem;
+}
+#lx-img-preview-wrap img {
+  max-height: 100px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+#lx-img-preview-wrap button {
+  position: absolute;
+  top: 3px; left: 3px;
+  background: rgba(0,0,0,.7);
+  border: none;
+  color: #fff;
+  border-radius: 3px;
+  padding: 1px 7px;
+  cursor: pointer;
+  font-size: .72rem;
+}
+
+/* Messages style */
+.lx-msg { display: flex; flex-direction: column; gap: 3px; }
+.lx-msg.user { align-items: flex-end; }
+.lx-msg.assistant { align-items: flex-start; }
+.lx-msg .lx-sender { font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); font-family: var(--mono); }
+.lx-msg .lx-bubble {
+  max-width: 78%;
+  border-radius: 12px;
+  padding: .75rem 1rem;
+  font-size: .92rem;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.lx-msg.user .lx-bubble {
+  background: rgba(181,137,15,.14);
+  border: 1px solid rgba(181,137,15,.25);
+  border-radius: 12px 12px 2px 12px;
+}
+.lx-msg.assistant .lx-bubble {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 12px 2px;
+}
+.lx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text3);
+  font-family: var(--mono);
+  gap: .75rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+.lx-empty .lx-empty-icon { font-size: 3rem; opacity: .4; }
+.lx-empty .lx-empty-title { font-size: .85rem; opacity: .6; }
+
 @media(max-width:768px){
   .app{grid-template-columns:1fr}
   aside{position:static;height:auto}
   .vgrid{grid-template-columns:1fr}
   .checks{grid-template-columns:1fr}
   main{padding:1rem}
+  #lexia-sidebar { width: 200px; }
+  #lexia-messages { padding: 1rem; }
 }
 </style>
 </head>
@@ -578,6 +856,81 @@ footer{text-align:center;padding:2rem 2rem 1.5rem;font-family:var(--mono);font-s
 
   <footer>TRIBUNAL DE VOGARIA — DROIT FRANÇAIS — SERVEUR RP ERLC — OUTIL DU JUGE</footer>
 </main>
+</div>
+
+<!-- ========== LEXIA FULLSCREEN MODE ========== -->
+<div id="lexia-fullscreen">
+
+  <!-- Sidebar discussions -->
+  <div id="lexia-sidebar">
+    <div class="lx-logo">
+      <button class="lx-back" onclick="quitterLexia()">← Retour</button>
+      <span class="lx-title">⚖ LEXIA</span>
+    </div>
+    <button class="lx-new-btn" onclick="lxNouvelleDisc()">✦ Nouvelle discussion</button>
+    <div class="lx-disc-list" id="lx-disc-list">
+      <div style="font-size:.72rem;color:var(--text3);font-style:italic;padding:.4rem .3rem">Aucune discussion</div>
+    </div>
+  </div>
+
+  <!-- Zone principale -->
+  <div id="lexia-main">
+
+    <!-- Topbar -->
+    <div id="lexia-topbar">
+      <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1.5px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">⚖</div>
+      <div>
+        <div style="font-size:.88rem;font-weight:500;color:var(--gold2)">LEXIA</div>
+        <div class="lx-status"><span style="width:6px;height:6px;border-radius:50%;background:#2ecc71;display:inline-block"></span>En ligne · Prête à analyser</div>
+      </div>
+      <span class="lx-disc-name" id="lx-disc-name"></span>
+      <button onclick="lxClearChat()" style="background:none;border:1px solid var(--border2);color:var(--text3);border-radius:4px;padding:.3rem .6rem;font-family:var(--mono);font-size:.68rem;cursor:pointer;transition:all .12s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--text3)'">Réinitialiser</button>
+    </div>
+
+    <!-- Messages -->
+    <div id="lexia-messages">
+      <div class="lx-empty" id="lx-empty">
+        <div class="lx-empty-icon">⚖</div>
+        <div class="lx-empty-title">LEXIA attend votre requête, Monsieur le Juge</div>
+      </div>
+    </div>
+
+    <!-- Zone saisie -->
+    <div id="lexia-input-area">
+      <div class="lx-input-row">
+
+        <!-- Image preview -->
+        <div id="lx-img-preview-wrap">
+          <img id="lx-img-preview">
+          <button onclick="lxClearImage()">✕ Retirer</button>
+        </div>
+
+        <!-- Upload image + zone texte -->
+        <div class="lx-textarea-row">
+          <div style="position:relative;flex:1">
+            <textarea id="lx-input" placeholder="Posez votre question à LEXIA… (Ctrl+Entrée pour envoyer)" rows="2" oninput="lxAutoResize(this)" onkeydown="lxKeyDown(event)"></textarea>
+          </div>
+          <input type="file" id="lx-file-input" accept="image/*" style="display:none" onchange="lxHandleImg(event)">
+          <div style="display:flex;flex-direction:column;gap:.4rem">
+            <button class="lx-img-btn" onclick="document.getElementById('lx-file-input').click()" title="Joindre une image" style="height:48px;padding:.4rem .7rem">📎</button>
+            <button class="lx-send-btn" id="lx-send-btn" onclick="lxSend()">Envoyer</button>
+          </div>
+        </div>
+
+        <!-- Shortcuts -->
+        <div class="lx-shortcuts">
+          <button class="btn-sm" onclick="lxQuick('Analyse ce rapport d\'arrestation et donne une recommandation de peine')">📋 Analyser rapport</button>
+          <button class="btn-sm" onclick="lxQuick('Rédige un mandat de dépôt officiel pour le Tribunal de Vogaria')">🔒 Mandat de dépôt</button>
+          <button class="btn-sm" onclick="lxQuick('Rédige un mandat d\'arrêt officiel pour le Tribunal de Vogaria')">🚨 Mandat d\'arrêt</button>
+          <button class="btn-sm" onclick="lxQuick('Quelle est la peine maximale pour un homicide volontaire ?')">🔴 Peine homicide</button>
+          <button class="btn-sm" onclick="lxQuick('Convertis 15 ans de réclusion criminelle en jours IRL selon les règles de Vogaria')">⏱ Conversion IRL</button>
+          <button class="btn-sm" onclick="lxQuick('Rédige une phrase officielle de verdict COUPABLE pour le Tribunal de Vogaria')">📜 Phrase verdict</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -969,11 +1322,36 @@ function resetForm() {
 }
 
 function switchTab(tab, btn) {
+  if (tab === 'ai') {
+    entrerLexia();
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    return;
+  }
+  quitterLexia();
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
   document.getElementById('pane-' + tab).classList.add('active');
   if (tab === 'histo') renderHistorique();
+}
+
+function entrerLexia() {
+  document.body.classList.add('lexia-mode');
+  lxRenderDiscList();
+  if (!lxCurrentDiscId && discussions.length > 0) {
+    lxChargerDisc(discussions[0].id);
+  } else if (!lxCurrentDiscId) {
+    lxNouvelleDisc();
+  }
+}
+
+function quitterLexia() {
+  document.body.classList.remove('lexia-mode');
+  // Réactiver le premier tab normal
+  const firstTab = document.querySelectorAll('.tab-btn')[0];
+  firstTab.classList.add('active');
+  document.querySelectorAll('.pane')[0].classList.add('active');
 }
 
 function goCode(cat) {
@@ -1848,6 +2226,210 @@ document.addEventListener('keydown', (e) => {
     sendAI();
   }
 });
+
+// =============================================
+// LEXIA FULLSCREEN — Nouveau système autonome
+// =============================================
+let lxCurrentDiscId = null;
+let lxCurrentImageB64 = null;
+let lxCurrentImageType = null;
+
+function lxSaveDiscs() {
+  const toSave = discussions.map(d => ({
+    ...d,
+    history: d.history.map(m => {
+      if (Array.isArray(m.content)) {
+        return { ...m, content: m.content.map(c => c.type === 'image' ? { type: 'text', text: '[Image]' } : c) };
+      }
+      return m;
+    })
+  }));
+  try { localStorage.setItem('lexia_discussions', JSON.stringify(toSave)); } catch(e) {}
+}
+
+function lxGetDisc() { return discussions.find(d => d.id === lxCurrentDiscId); }
+
+function lxNouvelleDisc() {
+  const id = Date.now();
+  const disc = { id, titre: 'Nouvelle discussion', history: [], createdAt: new Date().toLocaleDateString('fr-FR') };
+  discussions.unshift(disc);
+  lxSaveDiscs();
+  lxChargerDisc(id);
+  lxRenderDiscList();
+}
+
+function lxChargerDisc(id) {
+  lxCurrentDiscId = id;
+  const disc = lxGetDisc();
+  if (!disc) return;
+  const msgs = document.getElementById('lexia-messages');
+  msgs.innerHTML = '';
+  if (disc.history.length === 0) {
+    msgs.innerHTML = '<div class="lx-empty" id="lx-empty"><div class="lx-empty-icon">⚖</div><div class="lx-empty-title">LEXIA attend votre requête, Monsieur le Juge</div></div>';
+  } else {
+    disc.history.forEach(m => {
+      const text = Array.isArray(m.content)
+        ? m.content.filter(c => c.type === 'text').map(c => c.text).join(' ')
+        : m.content;
+      lxAddBubble(m.role, text || '', null, false);
+    });
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  const nameEl = document.getElementById('lx-disc-name');
+  if (nameEl) nameEl.textContent = disc.titre !== 'Nouvelle discussion' ? disc.titre : '';
+  lxRenderDiscList();
+}
+
+function lxSupprimerDisc(id, e) {
+  e.stopPropagation();
+  discussions = discussions.filter(d => d.id !== id);
+  if (lxCurrentDiscId === id) {
+    lxCurrentDiscId = null;
+    document.getElementById('lexia-messages').innerHTML = '<div class="lx-empty"><div class="lx-empty-icon">⚖</div><div class="lx-empty-title">LEXIA attend votre requête</div></div>';
+  }
+  lxSaveDiscs();
+  lxRenderDiscList();
+  if (lxCurrentDiscId === null && discussions.length > 0) lxChargerDisc(discussions[0].id);
+}
+
+function lxRenderDiscList() {
+  const list = document.getElementById('lx-disc-list');
+  if (!list) return;
+  if (discussions.length === 0) {
+    list.innerHTML = '<div style="font-size:.72rem;color:var(--text3);font-style:italic;padding:.4rem .3rem">Aucune discussion</div>';
+    return;
+  }
+  list.innerHTML = discussions.map(d => `
+    <div class="disc-item ${d.id === lxCurrentDiscId ? 'active' : ''}" onclick="lxChargerDisc(${d.id})">
+      <span class="disc-icon">⚖</span>
+      <span class="disc-label" title="${d.titre}">${d.titre}</span>
+      <button class="disc-del" onclick="lxSupprimerDisc(${d.id}, event)">✕</button>
+    </div>
+  `).join('');
+}
+
+function lxAddBubble(role, text, imgSrc, scroll = true) {
+  const empty = document.getElementById('lx-empty');
+  if (empty) empty.remove();
+  const msgs = document.getElementById('lexia-messages');
+  const div = document.createElement('div');
+  div.className = 'lx-msg ' + role;
+  const isUser = role === 'user';
+  div.innerHTML = `
+    <div class="lx-sender">${isUser ? 'Juge Holloway Darnell' : 'LEXIA · IA Judiciaire'}</div>
+    ${imgSrc ? `<img src="${imgSrc}" style="max-width:220px;border-radius:6px;border:1px solid var(--border);margin-bottom:4px">` : ''}
+    <div class="lx-bubble">${text}</div>
+  `;
+  msgs.appendChild(div);
+  if (scroll) msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function lxHandleImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    lxCurrentImageB64 = ev.target.result.split(',')[1];
+    lxCurrentImageType = file.type;
+    document.getElementById('lx-img-preview').src = ev.target.result;
+    document.getElementById('lx-img-preview-wrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function lxClearImage() {
+  lxCurrentImageB64 = null;
+  lxCurrentImageType = null;
+  document.getElementById('lx-img-preview-wrap').style.display = 'none';
+  document.getElementById('lx-file-input').value = '';
+}
+
+function lxClearChat() {
+  const disc = lxGetDisc();
+  if (disc) { disc.history = []; disc.titre = 'Nouvelle discussion'; lxSaveDiscs(); }
+  document.getElementById('lexia-messages').innerHTML = '<div class="lx-empty" id="lx-empty"><div class="lx-empty-icon">⚖</div><div class="lx-empty-title">LEXIA attend votre requête, Monsieur le Juge</div></div>';
+  document.getElementById('lx-disc-name').textContent = '';
+  lxClearImage();
+  document.getElementById('lx-input').value = '';
+  lxRenderDiscList();
+}
+
+function lxAutoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(ta.scrollHeight, 180) + 'px';
+}
+
+function lxKeyDown(e) {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); lxSend(); }
+}
+
+function lxQuick(q) {
+  if (!lxCurrentDiscId) lxNouvelleDisc();
+  document.getElementById('lx-input').value = q;
+  lxSend();
+}
+
+async function lxSend() {
+  if (!lxCurrentDiscId) lxNouvelleDisc();
+  const input = document.getElementById('lx-input').value.trim();
+  if (!input && !lxCurrentImageB64) return;
+
+  const btn = document.getElementById('lx-send-btn');
+  btn.disabled = true; btn.textContent = '⏳';
+
+  const imgSrc = lxCurrentImageB64 ? `data:${lxCurrentImageType};base64,${lxCurrentImageB64}` : null;
+  lxAddBubble('user', input || '(Image envoyée)', imgSrc);
+
+  const userContent = [];
+  if (lxCurrentImageB64) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: lxCurrentImageType, data: lxCurrentImageB64 } });
+  }
+  if (input) userContent.push({ type: 'text', text: input });
+
+  const disc = lxGetDisc();
+  const msgEntry = { role: 'user', content: userContent.length === 1 && !lxCurrentImageB64 ? input : userContent };
+  disc.history.push(msgEntry);
+
+  lxClearImage();
+  document.getElementById('lx-input').value = '';
+  document.getElementById('lx-input').style.height = 'auto';
+
+  const loadingDiv = lxAddBubble('assistant', '⏳ Analyse en cours…');
+
+  try {
+    const response = await fetch('/.netlify/functions/lexia', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: disc.history })
+    });
+    const data = await response.json();
+    const text = data.content?.map(c => c.text || '').join('') || data.error || 'Erreur de réponse.';
+    loadingDiv.querySelector('.lx-bubble').textContent = text;
+    disc.history.push({ role: 'assistant', content: text });
+
+    // Auto-titre après le 1er échange
+    if (disc.titre === 'Nouvelle discussion' && input) {
+      disc.titre = input.slice(0, 40) + (input.length > 40 ? '…' : '');
+      document.getElementById('lx-disc-name').textContent = disc.titre;
+    }
+    lxSaveDiscs();
+    lxRenderDiscList();
+  } catch(err) {
+    loadingDiv.querySelector('.lx-bubble').textContent = '❌ Erreur de connexion. Vérifiez votre connexion.';
+  }
+
+  btn.disabled = false; btn.textContent = 'Envoyer';
+  document.getElementById('lexia-messages').scrollTop = 99999;
+}
+
+// Sync discussions entre les deux systèmes (l'ancien utilisait aussi discussions[])
+// On réinitialise au chargement depuis localStorage
+try {
+  const saved = JSON.parse(localStorage.getItem('lexia_discussions') || '[]');
+  if (saved.length > 0 && discussions.length === 0) discussions = saved;
+} catch(e) {}
+
 </script>
 </body>
 </html>
